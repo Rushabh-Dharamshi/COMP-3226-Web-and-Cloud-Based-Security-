@@ -77,14 +77,21 @@ def fetch_all_comment_threads(video_id, video_genre):
                 print("HttpError. Ending process")
                 return comments
             for item in channelresp.get("items", []):
+                thumb_url = item["snippet"]["thumbnails"]["default"]["url"]
+                description = item["snippet"].get("description", "")
+
                 channelIdDict[item["id"]] = {
-                    "title": item["snippet"]["title"],
-                    "publishedAt": item["snippet"]["publishedAt"],
-                    "viewCount": item["statistics"].get("viewCount"),
-                    "subscriberCount": item["statistics"].get("subscriberCount"),
-                    "videoCount": item["statistics"].get("videoCount"),
-                    "country": item["snippet"].get("country"),
-                }
+                "title": item["snippet"]["title"],
+                "publishedAt": item["snippet"]["publishedAt"],
+                "viewCount": item["statistics"].get("viewCount"),
+                "subscriberCount": item["statistics"].get("subscriberCount"),
+                "videoCount": item["statistics"].get("videoCount"),
+                "country": item["snippet"].get("country"),
+
+                # NEW FEATURES
+                "hasDescription": len(description.strip()) > 0,
+                "defaultProfilePic": ("default" in thumb_url or "photo.jpg" in thumb_url or "channels/default" in thumb_url)
+            }
         
         for item in semicomments:
             channelDict = channelIdDict[item["authorChannelId"]]
@@ -99,7 +106,12 @@ def fetch_all_comment_threads(video_id, video_genre):
                 "commentText" : item["commentText"],
                 "commentDate" : item["publishedAt"],
                 "commentLikeCount" : item["commentLikeCount"],
-                "videoGenre": video_genre
+                "videoGenre": video_genre,
+                "hasDescription": len(description.strip()) > 0,
+                "defaultProfilePic": (
+                ("default" in thumb_url or "channels/default" in thumb_url)
+                and ("photo.jpg" not in thumb_url)
+    )
             })
         
         request = youtube.commentThreads().list_next(request, resp)
