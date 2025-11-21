@@ -5,7 +5,7 @@ import time
 import json
 
 
-API_KEY = "YOUR_API_KEY"
+API_KEY = "AIzaSyAh3tkglLdIpG7zmTI2Gu500SN8nw4eNs8"
 VIDEO_ID = "BxV14h0kFs0"
 
 
@@ -90,7 +90,8 @@ def fetch_all_comment_threads(video_id, video_genre):
 
                 # NEW FEATURES
                 "hasDescription": len(description.strip()) > 0,
-                "defaultProfilePic": ("default" in thumb_url or "photo.jpg" in thumb_url or "channels/default" in thumb_url)
+                "defaultProfilePic": ("default" in thumb_url or "channels/default" in thumb_url)
+
             }
         
         for item in semicomments:
@@ -107,11 +108,8 @@ def fetch_all_comment_threads(video_id, video_genre):
                 "commentDate" : item["publishedAt"],
                 "commentLikeCount" : item["commentLikeCount"],
                 "videoGenre": video_genre,
-                "hasDescription": len(description.strip()) > 0,
-                "defaultProfilePic": (
-                ("default" in thumb_url or "channels/default" in thumb_url)
-                and ("photo.jpg" not in thumb_url)
-    )
+                "hasDescription": channelDict["hasDescription"],
+                "defaultProfilePic": channelDict["defaultProfilePic"]
             })
         
         request = youtube.commentThreads().list_next(request, resp)
