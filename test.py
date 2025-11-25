@@ -5,8 +5,8 @@ import time
 import json
 
 
-API_KEY = "YOUR_API_KEY"
-VIDEO_ID = "BxV14h0kFs0"
+API_KEY = "AIzaSyAh3tkglLdIpG7zmTI2Gu500SN8nw4eNs8"
+VIDEO_ID = "fu6qi6R0qNs"
 
 
 youtube = build('youtube', 'v3', developerKey=API_KEY)
@@ -77,14 +77,22 @@ def fetch_all_comment_threads(video_id, video_genre):
                 print("HttpError. Ending process")
                 return comments
             for item in channelresp.get("items", []):
+                thumb_url = item["snippet"]["thumbnails"]["default"]["url"]
+                description = item["snippet"].get("description", "")
+
                 channelIdDict[item["id"]] = {
-                    "title": item["snippet"]["title"],
-                    "publishedAt": item["snippet"]["publishedAt"],
-                    "viewCount": item["statistics"].get("viewCount"),
-                    "subscriberCount": item["statistics"].get("subscriberCount"),
-                    "videoCount": item["statistics"].get("videoCount"),
-                    "country": item["snippet"].get("country"),
-                }
+                "title": item["snippet"]["title"],
+                "publishedAt": item["snippet"]["publishedAt"],
+                "viewCount": item["statistics"].get("viewCount"),
+                "subscriberCount": item["statistics"].get("subscriberCount"),
+                "videoCount": item["statistics"].get("videoCount"),
+                "country": item["snippet"].get("country"),
+
+                # NEW FEATURES
+                "hasDescription": len(description.strip()) > 0,
+                "defaultProfilePic": ("default" in thumb_url or "channels/default" in thumb_url)
+
+            }
         
         for item in semicomments:
             channelDict = channelIdDict[item["authorChannelId"]]
@@ -99,7 +107,9 @@ def fetch_all_comment_threads(video_id, video_genre):
                 "commentText" : item["commentText"],
                 "commentDate" : item["publishedAt"],
                 "commentLikeCount" : item["commentLikeCount"],
-                "videoGenre": video_genre
+                "videoGenre": video_genre,
+                "hasDescription": channelDict["hasDescription"],
+                "defaultProfilePic": channelDict["defaultProfilePic"]
             })
         
         request = youtube.commentThreads().list_next(request, resp)
