@@ -5,7 +5,7 @@ import time
 import json
 
 
-API_KEY = "AIzaSyAh3tkglLdIpG7zmTI2Gu500SN8nw4eNs8"
+API_KEY = ""
 VIDEO_ID = "fu6qi6R0qNs"
 
 
