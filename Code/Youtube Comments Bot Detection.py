@@ -1,5 +1,6 @@
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
+from collections import Counter
 from json import JSONDecodeError
 import time
 import json
@@ -62,7 +63,7 @@ def fetch_all_comment_threads(video_id, video_genre=None):
 
     count = 0
     max_batches = 50  # limit for throttling
-
+    commentTexts = [] # for checking duplicate comments, a good indicator of bot activity
     while request and count < max_batches:
         semicomments = []
         author_ids = set()
@@ -129,7 +130,7 @@ def fetch_all_comment_threads(video_id, video_genre=None):
         # Combine comment + channel info
         for item in semicomments:
             ch = channel_data.get(item["authorChannelId"], {})
-
+            commentTexts.append(item["commentText"])
             comments.append({
                 "channelTitle": ch.get("title"),
                 "channelDate": ch.get("publishedAt"),
@@ -153,6 +154,18 @@ def fetch_all_comment_threads(video_id, video_genre=None):
         request = youtube.commentThreads().list_next(request, resp)
         count += 1
         time.sleep(0.1)
+
+    counter = Counter(commentTexts)  #counts how many times a string occurs in the list
+
+    for comment in comments:
+        commentText = comment["commentText"]
+        if (counter[commentText] > 1): #checks if this comment occurs more than once
+            comment["isDuplicateComment"] = True
+        else:
+            comment["isDuplicateComment"] = False
+        del comment["commentText"]  #removes this text because its not a categorical
+
+
 
     return comments
 
