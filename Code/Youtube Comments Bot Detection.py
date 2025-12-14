@@ -124,6 +124,7 @@ def fetch_all_comment_threads(video_id, video_genre=None):
 
                     # EXTRA FEATURES FROM YOUTUBE.PY
                     "hasDescription": len(description.strip()) > 0,
+                    "channelDescription": description, 
                     "defaultProfilePic": ("default" in thumb_url or "channels/default" in thumb_url)
                 }
 
@@ -148,6 +149,7 @@ def fetch_all_comment_threads(video_id, video_genre=None):
 
                 # EXTRA FIELDS (safe even if channel missing)
                 "hasDescription": ch.get("hasDescription"),
+                "channelDescription": ch.get("channelDescription"), 
                 "defaultProfilePic": ch.get("defaultProfilePic")
             })
 
