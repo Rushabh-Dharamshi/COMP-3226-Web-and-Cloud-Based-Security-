@@ -12,18 +12,14 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 JSON_PATH = os.path.join(BASE_DIR, "output_combined.json")
 CSV_PATH = os.path.join(BASE_DIR, "output_combined.csv")
 
-# IMPORTANT:
-# You can swap the VIDEO_ID here. Both files had different IDs.
-VIDEO_ID = "NQypHE9_Fm4"   # Default (from test.py)
-# VIDEO_ID = "fu6qi6R0qNs" # Other option (from youtube.py)
+VIDEO_ID = ["NQypHE9_Fm4", "b8HbMzXeZa4"]   # List of video IDs to process
 
-API_KEY = os.getenv("YOUTUBE_API_KEY")  # test.py version (more correct)
+API_KEY = os.getenv("YOUTUBE_API_KEY")  # Ensure your API key is set
 
 if not API_KEY:
     raise ValueError("API_KEY not found. Make sure YOUTUBE_API_KEY is set.")
 
 youtube = build("youtube", "v3", developerKey=API_KEY)
-
 
 # ---------------- FUNCTIONS ----------------
 
@@ -34,16 +30,12 @@ def get_video_genre(video_id):
             part="snippet",
             id=video_id
         ).execute()
-
         category_id = video_resp["items"][0]["snippet"]["categoryId"]
-
         cat_resp = youtube.videoCategories().list(
             part="snippet",
             id=category_id
         ).execute()
-
         return cat_resp["items"][0]["snippet"]["title"]
-
     except Exception as e:
         print(f"Error fetching video genre: {e}")
         return None
@@ -51,53 +43,44 @@ def get_video_genre(video_id):
 
 def fetch_all_comment_threads(video_id, video_genre=None):
     """Fetch comments + channel info + extended features."""
-
     comments = []
-
     request = youtube.commentThreads().list(
         part="snippet,replies",
         videoId=video_id,
         maxResults=100,
         textFormat="plainText"
     )
-
     count = 0
-    max_batches = 50  # limit for throttling
-    commentTexts = [] # for checking duplicate comments, a good indicator of bot activity
+    max_batches = 50
+    commentTexts = []
+
     while request and count < max_batches:
         semicomments = []
         author_ids = set()
-
         try:
             resp = request.execute()
         except HttpError as e:
             print(f"HttpError: {e}. Ending comment fetch.")
             return comments
 
-        # Extract comment data
         for item in resp.get("items", []):
             top = item["snippet"]["topLevelComment"]["snippet"]
             author_id = top.get("authorChannelId", {}).get("value")
-
             print("Found user:", top.get("authorDisplayName"))
-
             semicomments.append({
                 "authorChannelId": author_id,
                 "commentText": top.get("textDisplay"),
                 "publishedAt": top.get("publishedAt"),
                 "commentLikeCount": top.get("likeCount"),
             })
-
             if author_id:
                 author_ids.add(author_id)
 
-        # Fetch channel info (batched)
         channel_data = {}
         author_list = list(author_ids)
 
         for i in range(0, len(author_list), 50):
             batch = author_list[i:i + 50]
-
             try:
                 ch_resp = youtube.channels().list(
                     part="snippet,statistics",
@@ -113,7 +96,6 @@ def fetch_all_comment_threads(video_id, video_genre=None):
                 stats = ch["statistics"]
                 thumb_url = snippet["thumbnails"]["default"]["url"]
                 description = snippet.get("description", "")
-
                 channel_data[ch["id"]] = {
                     "title": snippet["title"],
                     "publishedAt": snippet["publishedAt"],
@@ -121,18 +103,16 @@ def fetch_all_comment_threads(video_id, video_genre=None):
                     "subscriberCount": stats.get("subscriberCount"),
                     "videoCount": stats.get("videoCount"),
                     "country": snippet.get("country"),
-
-                    # EXTRA FEATURES FROM YOUTUBE.PY
                     "hasDescription": len(description.strip()) > 0,
-                    "channelDescription": description, 
+                    "channelDescription": description,
                     "defaultProfilePic": ("default" in thumb_url or "channels/default" in thumb_url)
                 }
 
-        # Combine comment + channel info
         for item in semicomments:
             ch = channel_data.get(item["authorChannelId"], {})
             commentTexts.append(item["commentText"])
             comments.append({
+                "videoID": video_id,
                 "channelTitle": ch.get("title"),
                 "channelDate": ch.get("publishedAt"),
                 "channelViewCount": ch.get("viewCount"),
@@ -140,16 +120,12 @@ def fetch_all_comment_threads(video_id, video_genre=None):
                 "channelVideoCount": ch.get("videoCount"),
                 "channelCountry": ch.get("country"),
                 "channelID": item["authorChannelId"],
-
                 "commentText": item["commentText"],
                 "commentDate": item["publishedAt"],
                 "commentLikeCount": item["commentLikeCount"],
-
                 "videoGenre": video_genre,
-
-                # EXTRA FIELDS (safe even if channel missing)
                 "hasDescription": ch.get("hasDescription"),
-                "channelDescription": ch.get("channelDescription"), 
+                "channelDescription": ch.get("channelDescription"),
                 "defaultProfilePic": ch.get("defaultProfilePic")
             })
 
@@ -157,55 +133,44 @@ def fetch_all_comment_threads(video_id, video_genre=None):
         count += 1
         time.sleep(0.1)
 
-    counter = Counter(commentTexts)  #counts how many times a string occurs in the list
-
+    counter = Counter(commentTexts)
     for comment in comments:
-        commentText = comment["commentText"]
-        if (counter[commentText] > 1): #checks if this comment occurs more than once
-            comment["isDuplicateComment"] = True
-        else:
-            comment["isDuplicateComment"] = False
-        del comment["commentText"]  #removes this text because its not a categorical
-
-
+        text = comment["commentText"]
+        comment["isDuplicateComment"] = counter[text] > 1
+        del comment["commentText"]
 
     return comments
 
-
 # ---------------- MAIN ----------------
 if __name__ == "__main__":
-
-    # Ensure JSON file exists
     if not os.path.exists(JSON_PATH):
-        with open(JSON_PATH, "w") as f:
+        with open(JSON_PATH, "w", encoding="utf-8") as f:
             json.dump([], f)
 
-    # Load old comments safely
     try:
-        with open(JSON_PATH, "r") as f:
+        with open(JSON_PATH, "r", encoding="utf-8") as f:
             old_comments = json.load(f)
-    except JSONDecodeError:
-        print("JSON corrupted. Resetting.")
+    except (JSONDecodeError, FileNotFoundError):
+        print("JSON corrupted or missing. Resetting.")
         old_comments = []
-        with open(JSON_PATH, "w") as f:
+        with open(JSON_PATH, "w", encoding="utf-8") as f:
             json.dump([], f)
 
-    # Fetch video metadata
-    video_genre = get_video_genre(VIDEO_ID)
+    all_comments = old_comments[:]
 
-    # Fetch comments
-    comments = fetch_all_comment_threads(VIDEO_ID, video_genre)
+    for vid in VIDEO_ID:
+        print(f"\n--- Starting fetch for Video ID: {vid} ---")
+        genre = get_video_genre(vid)
+        comments = fetch_all_comment_threads(vid, genre)
+        all_comments.extend(comments)
+        print(f"Fetched {len(comments)} comments for {vid}.")
 
-    # Merge & save JSON
-    all_comments = old_comments + comments
     with open(JSON_PATH, "w", encoding="utf-8") as f:
         json.dump(all_comments, f, indent=2, ensure_ascii=False)
 
-    # Save CSV (feature from test.py)
     df = pd.DataFrame(all_comments)
-    df.to_csv(CSV_PATH, index=False)
+    df.to_csv(CSV_PATH, index=False, encoding="utf-8-sig")
 
-    print(f"Saved {len(df)} comments → {CSV_PATH}")
+    print(f"\nCollection complete.")
+    print(f"Saved {len(df)} comments from {len(VIDEO_ID)} videos → {CSV_PATH}")
     print(df.head(10))
-
-    youtube.close()
