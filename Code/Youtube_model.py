@@ -508,6 +508,7 @@ class PROSDetector:
         
         return genre_stats
     
+    
     def compare_with_isolation_forest(self, df):
         """Compare PROS with Isolation Forest baseline."""
         try:
@@ -528,9 +529,22 @@ class PROSDetector:
                 print("No features available for Isolation Forest")
                 return df
             
-            # One-hot encode categorical features
+            # Prepare data for Isolation Forest - handle categorical columns properly
+            features_df = df[available_features].copy()
+            
+            # For each categorical column, handle missing values properly
+            for col in available_features:
+                if pd.api.types.is_categorical_dtype(features_df[col]):
+                    # For categorical columns, add 'Missing' as a valid category first
+                    features_df[col] = features_df[col].cat.add_categories(['Missing'])
+                    features_df[col] = features_df[col].fillna('Missing')
+                else:
+                    # For non-categorical, just convert to string
+                    features_df[col] = features_df[col].astype(str).fillna('Missing')
+            
+            # One-hot encode
             features_df = pd.get_dummies(
-                df[available_features].fillna('Missing'),
+                features_df,
                 columns=available_features,
                 drop_first=True
             )
@@ -540,13 +554,27 @@ class PROSDetector:
                 print("No features after encoding")
                 return df
             
+            # Check if we have enough data for Isolation Forest
+            if len(features_df) < 10:
+                print(f"Not enough data for Isolation Forest (only {len(features_df)} samples)")
+                return df
+            
             # Train Isolation Forest
-            contamination = min(0.5, 0.1 + (0.4 * (df['is_duplicate'].mean() if 'is_duplicate' in df.columns else 0.1)))
+            # Estimate contamination based on PROS scores if available
+            if 'pros_anomaly_score' in df.columns:
+                # Use top 10% of PROS scores as estimated anomaly rate
+                contamination = min(0.5, df['pros_anomaly_score'].quantile(0.9) * 0.1)
+                contamination = max(0.01, min(0.5, contamination))  # Clamp between 1% and 50%
+            else:
+                contamination = 0.1  # Default 10% anomalies
+            
+            print(f"  Using contamination rate: {contamination:.1%}")
             
             iso_forest = IsolationForest(
                 contamination=contamination,
                 random_state=42,
-                n_estimators=100
+                n_estimators=100,
+                max_samples='auto'
             )
             
             iso_scores = iso_forest.fit_predict(features_df)
@@ -557,19 +585,43 @@ class PROSDetector:
             
             # Calculate similarity with PROS
             if 'pros_anomaly_score' in df.columns:
-                # Create binary classification from PROS scores (top 20% as anomalies)
-                pros_threshold = df['pros_anomaly_score'].quantile(0.8)
+                # Create binary classification from PROS scores (top 10% as anomalies)
+                pros_threshold = df['pros_anomaly_score'].quantile(0.9)
                 df['pros_anomaly_binary'] = (df['pros_anomaly_score'] > pros_threshold).astype(int)
                 
                 # Calculate agreement
                 agreement = (df['iso_forest_anomaly'] == df['pros_anomaly_binary']).mean()
                 print(f"  Agreement between PROS and Isolation Forest: {agreement:.2%}")
+                
+                # Show how many flagged by each method
+                pros_flags = df['pros_anomaly_binary'].sum()
+                iso_flags = df['iso_forest_anomaly'].sum()
+                print(f"  PROS flagged: {pros_flags} accounts ({pros_flags/len(df):.1%})")
+                print(f"  Isolation Forest flagged: {iso_flags} accounts ({iso_flags/len(df):.1%})")
+                
+                # Calculate precision and recall if we have some ground truth
+                # (For demonstration, we'll use PROS as "pseudo-ground truth")
+                true_positives = ((df['pros_anomaly_binary'] == 1) & (df['iso_forest_anomaly'] == 1)).sum()
+                false_positives = ((df['pros_anomaly_binary'] == 0) & (df['iso_forest_anomaly'] == 1)).sum()
+                false_negatives = ((df['pros_anomaly_binary'] == 1) & (df['iso_forest_anomaly'] == 0)).sum()
+                
+                if (true_positives + false_positives) > 0:
+                    precision = true_positives / (true_positives + false_positives)
+                    print(f"  Precision (vs PROS): {precision:.2%}")
+                
+                if (true_positives + false_negatives) > 0:
+                    recall = true_positives / (true_positives + false_negatives)
+                    print(f"  Recall (vs PROS): {recall:.2%}")
             
             return df
             
         except Exception as e:
             print(f"Error running Isolation Forest: {e}")
+            import traceback
+            traceback.print_exc()
             return df
+    
+    
     
     def run_full_analysis(self, df):
         """Run complete PROS analysis pipeline."""
