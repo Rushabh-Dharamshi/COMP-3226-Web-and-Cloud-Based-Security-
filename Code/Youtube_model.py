@@ -6,7 +6,6 @@ import warnings
 warnings.filterwarnings('ignore')
 from datetime import datetime
 
-# ---------------- CONFIG ----------------
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CSV_PATH = os.path.join(BASE_DIR, "output_combined.csv")
 
