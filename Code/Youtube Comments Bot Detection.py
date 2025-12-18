@@ -12,7 +12,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 JSON_PATH = os.path.join(BASE_DIR, "output_combined.json")
 CSV_PATH = os.path.join(BASE_DIR, "output_combined.csv")
 
-VIDEO_ID = ["NQypHE9_Fm4", "b8HbMzXeZa4"]   # List of video IDs to process
+VIDEO_ID = ["NQypHE9_Fm4", "b8HbMzXeZa4", "tKg9KSpG0Vw", "vRpN8yfNp7Y"]   # List of video IDs to process
 
 API_KEY = os.getenv("YOUTUBE_API_KEY")  # Ensure your API key is set
 
