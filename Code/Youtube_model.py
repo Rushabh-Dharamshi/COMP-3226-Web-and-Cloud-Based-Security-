@@ -22,6 +22,7 @@ class PROSDetector:
         self.unattacked_bins = {}
         self.conditional_independence_rules = {}
         self.feature_stats = {}
+        self._observed_probs = {}
         
     def parse_timestamp(self, timestamp_str):
         """Safely parse timestamp with various formats."""
