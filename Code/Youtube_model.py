@@ -858,10 +858,11 @@ if __name__ == "__main__":
             # Run full analysis
             results = detector.run_full_analysis(df)
             
-            # Display results
-            visualize_results(results)
-            
             # Save results
             output_path = os.path.join(BASE_DIR, "pros_results.csv")
             results['df_scored'].to_csv(output_path, index=False)
             print(f"\nResults saved to: {output_path}")
+            
+            
+            # Display results
+            visualize_results(results)
