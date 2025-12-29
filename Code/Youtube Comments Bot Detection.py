@@ -1,6 +1,5 @@
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
-from collections import Counter
 from json import JSONDecodeError
 import time
 import json
@@ -14,10 +13,39 @@ CSV_PATH = os.path.join(BASE_DIR, "output_combined.csv")
 
 # IMPORTANT:
 # You can swap the VIDEO_ID here. Both files had different IDs.
-VIDEO_ID = "NQypHE9_Fm4"   # Default (from test.py)
-# VIDEO_ID = "fu6qi6R0qNs" # Other option (from youtube.py)
-
-API_KEY = os.getenv("YOUTUBE_API_KEY")  # test.py version (more correct)
+API_KEY = "AIzaSyAh3tkglLdIpG7zmTI2Gu500SN8nw4eNs8" #replace with your own API key
+VIDEO_IDS = [
+    "SdSSPF1S-Uc",
+    "t6h8Uae2Q_E",
+    "mfv0V1SxbNA",
+    "KipDBa4bTl8",
+    "tAXKxKTGWFQ",
+    "lrh1KcM2QWo",
+    "uXD6x3pfYxQ",
+    "hmdzniMJOZs",
+    "yFmizY7pe7U",
+    "OPZoLZBXD0Y",
+    "4xnqtbrLBBQ",
+    "GX8Hg6kWQYI",
+    "C1f8_-8GU7I",
+    "gqwkG4W5Xm0",
+    "uTWtdwzzxaM",
+    "F9EuA8mtHV8",
+    "RGoQCy2BlMw",
+    "KGBGXZTQ_KI",
+    "nkK312fMPsQ",
+    "PCpvt3wk42A",
+    "3olqrQtjPfc",
+    "7SopjMoIMfg",
+    "lz3088bex3w",
+    "COtZc4S4rdY",
+    "K_o2ejRHLws",
+    "7DKv5H5Frt0",
+    "RbXzz3oZDr4",
+    "NBZv0_MImIY",
+    "PdmoGCjHpE0",
+    "jlV9kJDdYug"
+]
 
 if not API_KEY:
     raise ValueError("API_KEY not found. Make sure YOUTUBE_API_KEY is set.")
@@ -63,7 +91,7 @@ def fetch_all_comment_threads(video_id, video_genre=None):
 
     count = 0
     max_batches = 50  # limit for throttling
-    commentTexts = [] # for checking duplicate comments, a good indicator of bot activity
+
     while request and count < max_batches:
         semicomments = []
         author_ids = set()
@@ -131,8 +159,9 @@ def fetch_all_comment_threads(video_id, video_genre=None):
         # Combine comment + channel info
         for item in semicomments:
             ch = channel_data.get(item["authorChannelId"], {})
-            commentTexts.append(item["commentText"])
+
             comments.append({
+                "videoId": video_id,
                 "channelTitle": ch.get("title"),
                 "channelDate": ch.get("publishedAt"),
                 "channelViewCount": ch.get("viewCount"),
@@ -157,18 +186,6 @@ def fetch_all_comment_threads(video_id, video_genre=None):
         count += 1
         time.sleep(0.1)
 
-    counter = Counter(commentTexts)  #counts how many times a string occurs in the list
-
-    for comment in comments:
-        commentText = comment["commentText"]
-        if (counter[commentText] > 1): #checks if this comment occurs more than once
-            comment["isDuplicateComment"] = True
-        else:
-            comment["isDuplicateComment"] = False
-        del comment["commentText"]  #removes this text because its not a categorical
-
-
-
     return comments
 
 
@@ -182,22 +199,28 @@ if __name__ == "__main__":
 
     # Load old comments safely
     try:
-        with open(JSON_PATH, "r") as f:
+        with open(JSON_PATH, "r", encoding="utf-8") as f:
             old_comments = json.load(f)
     except JSONDecodeError:
         print("JSON corrupted. Resetting.")
         old_comments = []
-        with open(JSON_PATH, "w") as f:
+        with open(JSON_PATH, "w", encoding="utf-8") as f:
             json.dump([], f)
 
     # Fetch video metadata
-    video_genre = get_video_genre(VIDEO_ID)
+    all_new_comments = []
 
-    # Fetch comments
-    comments = fetch_all_comment_threads(VIDEO_ID, video_genre)
+    for video_id in VIDEO_IDS:
+        print(f"\nFetching data for video: {video_id}")
+
+        video_genre = get_video_genre(video_id)
+        comments = fetch_all_comment_threads(video_id, video_genre)
+
+        print(f"Collected {len(comments)} comments from {video_id}")
+        all_new_comments.extend(comments)
 
     # Merge & save JSON
-    all_comments = old_comments + comments
+    all_comments = old_comments + all_new_comments
     with open(JSON_PATH, "w", encoding="utf-8") as f:
         json.dump(all_comments, f, indent=2, ensure_ascii=False)
 
