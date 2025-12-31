@@ -1,0 +1,8 @@
+genre_group,pros_anomaly_score_mean,pros_anomaly_score_std,pros_anomaly_score_count,is_duplicate_mean,channelID_nunique
+News & Politics,2.686,11.14,5504,0.0,4717
+People & Blogs,2.055,3.725,1568,0.0,1441
+Entertainment,2.036,3.309,14990,0.0,14007
+Sports,2.017,3.318,442,0.0,413
+Gaming,1.89,3.379,953,0.0,884
+Music,1.876,2.123,9,0.0,9
+Howto & Style,1.678,2.349,448,0.0,430
