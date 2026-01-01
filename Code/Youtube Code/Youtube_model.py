@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import os
+import json
 from scipy.spatial.distance import jensenshannon
 import warnings
 warnings.filterwarnings('ignore')
@@ -14,25 +15,10 @@ CSV_PATH = os.path.join(DATA_DIR, "Youtube_extracted_data.csv")
 
 YOUTUBE_RESULTS_DIR = os.path.join(PROJECT_DIR, "Youtube Results")
 os.makedirs(YOUTUBE_RESULTS_DIR, exist_ok=True)
-TERMINAL_OUTPUT_PATH = os.path.join(YOUTUBE_RESULTS_DIR, "pros_results_terminal_output.txt")
+
+
+
 PLOT_OUTPUT_PATH = os.path.join(YOUTUBE_RESULTS_DIR, "pros_results_visualization.png")
-
-
-class Logger(object):
-    def __init__(self, filepath):
-        self.terminal = sys.stdout
-        self.log = open(filepath, "w", encoding="utf-8")
-        
-    def write(self, message):
-        self.terminal.write(message)
-        self.log.write(message)
-        self.flush()
-        
-    def flush(self):
-        self.terminal.flush()
-        self.log.flush()
-
-sys.stdout = Logger(TERMINAL_OUTPUT_PATH)
 
 
 class PROSDetector:
@@ -216,10 +202,7 @@ class PROSDetector:
         """
         print("\nDefining conditional independence rules...")
         
-        # Based on YouTube comment analysis, we hypothesize:
-        # 1. Within a time of day, account age is independent of subscriber count
-        # 2. Within a subscriber bin, duplicate behavior is independent of video genre
-        # 3. Within account age, profile completeness is independent of likes received
+    
         
         self.conditional_independence_rules = {
             'account_age_bin': ['time_of_day', 'subscriber_bin'],
@@ -867,41 +850,72 @@ def visualize_results(results):
 # ---------------- MAIN EXECUTION ----------------
 
 if __name__ == "__main__":
-    if not os.path.exists(CSV_PATH):
-        print(f"Error: CSV file not found at {CSV_PATH}")
-        print("Please run the data fetching script first.")
-    else:
-        # Load data
-        print(f"Loading data from {CSV_PATH}...")
-        df = pd.read_csv(CSV_PATH)
-        
-        if df.empty:
-            print("CSV file is empty.")
+    
+    
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    TERMINAL_OUTPUT_PATH = os.path.join(
+        YOUTUBE_RESULTS_DIR,
+        f"pros_terminal_output_{timestamp}.txt"
+    )
+
+    class Logger(object):
+        def __init__(self, filepath):
+            self.terminal = sys.stdout
+            self.log = open(filepath, "w", encoding="utf-8")
+
+        def write(self, message):
+            self.terminal.write(message)
+            self.log.write(message)
+            self.flush()
+
+        def flush(self):
+            self.terminal.flush()
+            self.log.flush()
+
+    logger = Logger(TERMINAL_OUTPUT_PATH)
+    sys.stdout = logger
+    
+    try:
+        if not os.path.exists(CSV_PATH):
+            print(f"Error: CSV file not found at {CSV_PATH}")
+            print("Please run the data fetching script first.")
         else:
-            print(f"Loaded {len(df)} rows with {len(df.columns)} columns")
-            print(f"Columns: {list(df.columns)}")
-            
-            # Initialize and run PROS detector
-            detector = PROSDetector(min_samples_per_bin=5, jsd_threshold=0.15)
-            
-            # Run full analysis
-            results = detector.run_full_analysis(df)
-            
-            
-            if 'genre_analysis' in results and results['genre_analysis'] is not None:
-                genre_csv_path = os.path.join(YOUTUBE_RESULTS_DIR, "pros_genre_analysis.csv")
-                results['genre_analysis'].to_csv(genre_csv_path, index=False)
-                print(f"✓ Saved genre analysis to: {genre_csv_path}")
-            
-            # Save clean distributions
-            if 'clean_distributions' in results:
-                clean_dist_path = os.path.join(YOUTUBE_RESULTS_DIR, "pros_clean_distributions.json")
-                import json
-                with open(clean_dist_path, 'w') as f:
-                    json.dump(results['clean_distributions'], f, indent=2)
-                print(f"✓ Saved clean distributions to: {clean_dist_path}")
-            
-            # Display results
-            visualize_results(results)
-            sys.stdout.log.close()
-            print(f"\n✓ All results saved to: {YOUTUBE_RESULTS_DIR}")
+            # Load data
+            print(f"Loading data from {CSV_PATH}...")
+            df = pd.read_csv(CSV_PATH)
+
+            if df.empty:
+                print("CSV file is empty.")
+            else:
+                print(f"Loaded {len(df)} rows with {len(df.columns)} columns")
+                print(f"Columns: {list(df.columns)}")
+
+                # Initialize and run PROS detector
+                detector = PROSDetector(min_samples_per_bin=5, jsd_threshold=0.15)
+                
+                # Run full analysis
+                results = detector.run_full_analysis(df)
+
+                # Save genre analysis if available
+                if results.get('genre_analysis') is not None:
+                    genre_csv_path = os.path.join(YOUTUBE_RESULTS_DIR, "pros_genre_analysis.csv")
+                    results['genre_analysis'].to_csv(genre_csv_path, index=False)
+                    print(f"✓ Saved genre analysis to: {genre_csv_path}")
+
+                # Save clean distributions
+                if 'clean_distributions' in results:
+                    clean_dist_path = os.path.join(YOUTUBE_RESULTS_DIR, "pros_clean_distributions.json")
+                    with open(clean_dist_path, 'w') as f:
+                        json.dump(results['clean_distributions'], f, indent=2)
+                    print(f"✓ Saved clean distributions to: {clean_dist_path}")
+
+                # Display results
+                visualize_results(results)
+    finally:
+        # Restore stdout and safely close logger
+        sys.stdout = logger.terminal
+        logger.close()
+        print(f"\n✓ All results saved to: {YOUTUBE_RESULTS_DIR}")
+
+    
+

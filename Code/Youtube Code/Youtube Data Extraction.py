@@ -19,7 +19,7 @@ CSV_PATH = os.path.join(DATA_DIR, "Youtube_extracted_data.csv")
 
 # remove old video ids where data has already been collected 
 # only include new video ids here
-VIDEO_ID = ["HYYoepuLZSI", "zMNAos1hotI", "4ZzpL8BCKPw", "61Xlain6QP8", "5E1d_wA3B1g", "aprGWX2IOGs", "F-OU8gr2htQ", "VZFjtKM_GtE"]   
+VIDEO_ID = ["NWSe2SoVwZs", "Wk_lZXwa9K4", "Urcw56iV3EI", "8ZYD4cD3yHw", "DHR6usutswA", "zPbrkmdcTfo", "UxU3RceDIn0", "8ZwhtDXhzUc"]   
 
 API_KEY = os.getenv("YOUTUBE_API_KEY")
 
