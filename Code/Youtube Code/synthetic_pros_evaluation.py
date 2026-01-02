@@ -104,8 +104,12 @@ if __name__ == "__main__":
         def flush(self):
             self.terminal.flush()
             self.log.flush()
+        
+        def close(self):
+            self.log.close()
 
-    sys.stdout = Logger(TERMINAL_OUTPUT_PATH)
+    logger = Logger(TERMINAL_OUTPUT_PATH)
+    sys.stdout = logger
 
     # ------------------ Run experiments safely ------------------
     try:
@@ -240,5 +244,6 @@ if __name__ == "__main__":
 
     finally:
         # ------------------ Close log safely ------------------
-        sys.stdout.log.close()
+        #sys.stdout.log.close()
         sys.stdout = sys.__stdout__
+        logger.close()
