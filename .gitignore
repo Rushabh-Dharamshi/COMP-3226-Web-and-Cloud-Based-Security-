@@ -1,5 +1,5 @@
 /.venv
 /.vscode
 .env
-output_combined.csv
-output_combined.json
+*.json
+*.csv
