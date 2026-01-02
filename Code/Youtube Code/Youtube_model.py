@@ -871,6 +871,9 @@ if __name__ == "__main__":
         def flush(self):
             self.terminal.flush()
             self.log.flush()
+        
+        def close(self):
+            self.log.close()
 
     logger = Logger(TERMINAL_OUTPUT_PATH)
     sys.stdout = logger
@@ -913,7 +916,7 @@ if __name__ == "__main__":
                 visualize_results(results)
     finally:
         # Restore stdout and safely close logger
-        sys.stdout = logger.terminal
+        sys.stdout = sys.__stdout__
         logger.close()
         print(f"\n✓ All results saved to: {YOUTUBE_RESULTS_DIR}")
 
