@@ -1,12 +1,11 @@
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from collections import Counter
-from json import JSONDecodeError
-import time
 import json
 import pandas as pd
 import os
-import matplotlib.pyplot as plt
+import time
+import re
 
 # ---------------- CONFIG ----------------
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -17,7 +16,7 @@ os.makedirs(DATA_DIR, exist_ok=True)
 
 JSON_PATH = os.path.join(DATA_DIR, "Youtube_extracted_data.json")
 CSV_PATH = os.path.join(DATA_DIR, "Youtube_extracted_data.csv")
-EXCEL_PATH = os.path.join(DATA_DIR, "video_ids.xlsx")  
+EXCEL_PATH = os.path.join(DATA_DIR, "video_ids.xlsx")
 
 API_KEY = os.getenv("YOUTUBE_API_KEY")
 if not API_KEY:
@@ -27,19 +26,42 @@ youtube = build("youtube", "v3", developerKey=API_KEY)
 
 # ---------------- HELPER FUNCTIONS ----------------
 
+def clean_and_load_json(json_path):
+    """Load a JSON file and clean it in place if corrupted."""
+    if not os.path.exists(json_path):
+        print(f"⚠ {json_path} does not exist. Starting with empty list.")
+        return []
+
+    try:
+        with open(json_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+            print(f"✅ Loaded {len(data)} records from {json_path}")
+            return data
+    except json.JSONDecodeError:
+        print(f"⚠ {json_path} is corrupted. Cleaning in place...")
+        with open(json_path, "r", encoding="utf-8", errors="ignore") as f:
+            text = f.read()
+        # Extract objects containing "videoID"
+        matches = re.findall(r'{[^{}]*"videoID"\s*:\s*"[^"]+"[^{}]*}', text)
+        recovered = []
+        for m in matches:
+            try:
+                recovered.append(json.loads(m))
+            except json.JSONDecodeError:
+                continue
+        # Save cleaned JSON
+        with open(json_path, "w", encoding="utf-8") as f:
+            json.dump(recovered, f, indent=2, ensure_ascii=False)
+        print(f"✅ Cleaned {len(recovered)} records in {json_path}")
+        return recovered
+
 def get_video_ids_from_excel(excel_path):
-    """Load video IDs from Excel file."""
     if not os.path.exists(excel_path):
         raise FileNotFoundError(f"{excel_path} not found. Create Excel with column 'videoID'.")
     df = pd.read_excel(excel_path, engine='openpyxl')
     return df['videoID'].dropna().astype(str).tolist()
 
-def get_processed_video_ids(existing_comments):
-    """Return set of already processed video IDs."""
-    return set(comment.get("videoID") for comment in existing_comments if "videoID" in comment)
-
 def get_video_genre(video_id):
-    """Fetch human-readable genre of a YouTube video."""
     try:
         video_resp = youtube.videos().list(part="snippet", id=video_id).execute()
         category_id = video_resp["items"][0]["snippet"]["categoryId"]
@@ -49,9 +71,7 @@ def get_video_genre(video_id):
         print(f"Error fetching genre for {video_id}: {e}")
         return "Unknown"
 
-
 def fetch_all_comment_threads(video_id, video_genre=None, max_comments=5000):
-    """Fetch comments + channel info for a video, up to max_comments."""
     comments = []
     request = youtube.commentThreads().list(
         part="snippet,replies",
@@ -61,7 +81,7 @@ def fetch_all_comment_threads(video_id, video_genre=None, max_comments=5000):
     )
 
     comment_texts = []
-    total_fetched = 0  # Track number of comments fetched
+    total_fetched = 0
 
     while request and total_fetched < max_comments:
         semicomments = []
@@ -74,7 +94,7 @@ def fetch_all_comment_threads(video_id, video_genre=None, max_comments=5000):
 
         for item in resp.get("items", []):
             if total_fetched >= max_comments:
-                break  # Stop if reached limit
+                break
             top = item["snippet"]["topLevelComment"]["snippet"]
             author_id = top.get("authorChannelId", {}).get("value")
             semicomments.append({
@@ -98,7 +118,6 @@ def fetch_all_comment_threads(video_id, video_genre=None, max_comments=5000):
                 ).execute()
             except HttpError:
                 continue
-
             for ch in ch_resp.get("items", []):
                 snippet = ch["snippet"]
                 stats = ch["statistics"]
@@ -138,7 +157,7 @@ def fetch_all_comment_threads(video_id, video_genre=None, max_comments=5000):
             })
 
         if total_fetched >= max_comments:
-            break  # Stop fetching more pages
+            break
         request = youtube.commentThreads().list_next(request, resp)
         time.sleep(0.1)
 
@@ -151,81 +170,57 @@ def fetch_all_comment_threads(video_id, video_genre=None, max_comments=5000):
 
     return comments
 
-
+def recover_video_ids_from_json_data(json_data):
+    """Return set of videoIDs from loaded JSON data."""
+    return set(c.get("videoID") for c in json_data if "videoID" in c)
 
 # ---------------- MAIN ----------------
 
 if __name__ == "__main__":
-    # Load Excel video IDs
+    print("🔹 Starting YouTube data extraction...")
+
+    # Clean and load main JSON
+    original_comments = clean_and_load_json(JSON_PATH)
+    processed_video_ids = recover_video_ids_from_json_data(original_comments)
+    print(f"{len(original_comments)} comments already in main JSON.")
+    print(f"{len(processed_video_ids)} videos already processed.\n")
+
+    # Load video IDs from Excel
     video_ids_raw = get_video_ids_from_excel(EXCEL_PATH)
-    total_ids = len(video_ids_raw)
-    print(f"{total_ids} total video IDs loaded from Excel.")
-
-    # Detect duplicates in Excel
-    duplicates_in_excel = [vid for vid, count in Counter(video_ids_raw).items() if count > 1]
-    if duplicates_in_excel:
-        print(f"Warning: {len(duplicates_in_excel)} duplicate video IDs found in Excel.")
-        # Optional: print duplicates
-        print("Duplicate video IDs:", duplicates_in_excel)
-
-    # Keep only unique IDs from Excel for processing
     unique_video_ids = list(dict.fromkeys(video_ids_raw))
-    print(f"{len(unique_video_ids)} unique video IDs will be processed.")
+    print(f"{len(unique_video_ids)} unique video IDs to process.\n")
 
-    # Load existing data if present
-    if os.path.exists(JSON_PATH):
-        try:
-            with open(JSON_PATH, "r", encoding="utf-8") as f:
-                all_comments = json.load(f)
-        except JSONDecodeError:
-            print("Existing JSON corrupted. Resetting.")
-            all_comments = []
-    else:
-        all_comments = []
+    all_new_comments = []
 
-    # Set of already processed video IDs (from previous runs or JSON)
-    processed_video_ids = get_processed_video_ids(all_comments)
-    print(f"Previously processed videos: {len(processed_video_ids)}")
-
-    # Process videos in order, skipping duplicates in Excel and JSON
     for vid in unique_video_ids:
         if vid in processed_video_ids:
-            print(f"Skipping {vid} (already collected)")
+            print(f"Skipping {vid} (already processed).")
             continue
 
         print(f"\n--- Fetching NEW video {vid} ---")
         genre = get_video_genre(vid)
-        comments = fetch_all_comment_threads(vid, genre)
-        all_comments.extend(comments)
-        print(f"Added {len(comments)} comments from {vid}")
+        comments = fetch_all_comment_threads(vid, video_genre=genre)
+        print(f"Fetched {len(comments)} comments from {vid}")
 
-        # Mark this video as processed immediately to skip any duplicates
+        # Avoid duplicates before merging
+        existing_keys = set((c.get("videoID"), c.get("commentDate"), c.get("channelID")) for c in original_comments)
+        new_comments = [c for c in comments if (c.get("videoID"), c.get("commentDate"), c.get("channelID")) not in existing_keys]
+
+        original_comments.extend(new_comments)
+        all_new_comments.extend(new_comments)
         processed_video_ids.add(vid)
+        print(f"✅ {len(new_comments)} new comments merged into main JSON.\n")
 
-        # Save JSON incrementally (with line terminator normalization)
-        json_text = json.dumps(all_comments, indent=2, ensure_ascii=False)
-        json_text = json_text.replace("\u2028", "\n").replace("\u2029", "\n")
+        # Save main JSON incrementally to avoid data loss
         with open(JSON_PATH, "w", encoding="utf-8") as f:
-            f.write(json_text)
+            json.dump(original_comments, f, indent=2, ensure_ascii=False)
 
-    # ---------------- SAVE CSV ----------------
-    df = pd.DataFrame(all_comments)
-    df.to_csv(CSV_PATH, index=False, encoding="utf-8-sig")
+    # Save CSV
+    if all_new_comments:
+        df = pd.DataFrame(all_new_comments)
+        df.to_csv(CSV_PATH, index=False, encoding="utf-8-sig")
+        print(f"✅ CSV saved: {CSV_PATH}")
 
-    # ---------------- SUMMARY ----------------
-    print("\nData collection complete.")
-    print(f"Total comments stored: {len(df)}")
-    print(f"Total unique videos processed (including previous runs): {len(processed_video_ids)}")
-
-    summary_df = df[['videoID','videoGenre']].drop_duplicates()
-    summary_counts = summary_df['videoGenre'].value_counts()
-    print("\nSummary of videos per category:")
-    print(summary_counts)
-
-    # ---------------- PIE CHART ----------------
-    plt.figure(figsize=(8,8))
-    summary_counts.plot.pie(autopct='%1.1f%%', startangle=90, cmap='tab20')
-    plt.title("Distribution of Videos by Category")
-    plt.ylabel("")
-    plt.tight_layout()
-    plt.show()
+    print(f"\n🔹 Data extraction complete. Only 2 files remain: main JSON and CSV.")
+    print(f"Total comments in JSON: {len(original_comments)}")
+    print(f"Total new comments in CSV: {len(all_new_comments)}")
