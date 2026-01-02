@@ -219,7 +219,7 @@ if __name__ == "__main__":
     if all_new_comments:
         df = pd.DataFrame(all_new_comments)
         df.to_csv(CSV_PATH, index=False, encoding="utf-8-sig")
-        print(f"✅ CSV saved: {CSV_PATH}")
+        print(f"CSV saved: {CSV_PATH}")
 
     print(f"\n🔹 Data extraction complete. Only 2 files remain: main JSON and CSV.")
     print(f"Total comments in JSON: {len(original_comments)}")
