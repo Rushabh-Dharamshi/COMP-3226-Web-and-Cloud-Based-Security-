@@ -12,7 +12,7 @@ Ensure you have Python 3.8+ installed. You will need the following Python librar
 ```bash
 pip install pandas numpy scipy scikit-learn matplotlib user-agents geoip2
 ```
-# Important: You also need the GeoLite2-City.mmdb database for IP geolocation (Cuurently provided in the directory, if that does work follow the steps below to install GeoLite2.
+**Important: You also need the GeoLite2-City.mmdb database for IP geolocation (Cuurently provided in the directory, if that does work follow the steps below to install GeoLite2.**
 
 1. Sign up for a free account at MaxMind.
 2. Download the GeoLite2 City database (MMDB format).
@@ -27,7 +27,7 @@ Run the downloader script:
 
 python web_log_dataset.py
 ```
-# If for whatever reason the script doesn't work the alternative method to collect data is using [wget](https://eternallybored.org/misc/wget/):
+**If for whatever reason the script doesn't work the alternative method to collect data is using [wget](https://eternallybored.org/misc/wget/):**
 
 Steps to install wget:
 
@@ -36,7 +36,7 @@ Steps to install wget:
 3. Paste the file there. (You will need administrator privileges to do this).
 4. Verification. Open Command Prompt (cmd) and type wget --version. If installed correctly, it will display the version information.
 
-# Note: Placing it in System32 automatically adds it to your system path, allowing you to run it from any command prompt window.
+**Note: Placing it in System32 automatically adds it to your system path, allowing you to run it from any command prompt window.**
 
 Run this one-line command:
 ```bash 
@@ -98,8 +98,8 @@ Output:
 
 ## Troubleshooting
 
-Memory Error: Step 4 crashes with a MemoryError or ArrayMemoryError if all the data is used for one hot encoding due to a dense matrix so it is very easy for computers to run out of RAM. Due to this Isolation Forest only requires 100,000 rows is statistically sufficient to generate the ROC curve (feel free to change the sample size based on your RAM capacity).
+1. Memory Error: Step 4 crashes with a MemoryError or ArrayMemoryError if all the data is used for one hot encoding due to a dense matrix so it is very easy for computers to run out of RAM. Due to this Isolation Forest only requires 100,000 rows is statistically sufficient to generate the ROC curve (feel free to change the sample size based on your RAM capacity).
 
-Missing GeoIP: If geolocation columns show "Unknown", ensure GeoLite2-City.mmdb is in the correct folder.
+2. Missing GeoIP: If geolocation columns show "Unknown", ensure GeoLite2-City.mmdb is in the correct folder.
 
-Slow Processing: Step 2 may take 5-10 minutes depending on your CPU speed as it processes millions of log lines.
+3. Slow Processing: Step 2 may take 5-10 minutes depending on your CPU speed as it processes millions of log lines.
