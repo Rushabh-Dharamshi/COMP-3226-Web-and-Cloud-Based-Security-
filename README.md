@@ -12,7 +12,7 @@
 3. [Youtube Comments Analysis - Setup & Execution Guide](#youtube-comments-analysis---setup--execution-guide)
 
 # Introduction
-This README.md provides the step-by-step instructions needed to run your web log analysis project.
+This README.md provides the step-by-step instructions needed to run the web log and YouTube comment analysis project. The purpose of the weblog dataset is to prove that the PROS algoritihm works based on ground truth labels. 
 
 # Web Log PROS Analysis - Setup & Execution Guide
 
