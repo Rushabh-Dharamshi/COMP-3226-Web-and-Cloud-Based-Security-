@@ -1,4 +1,17 @@
 # COMP-3226-Web-and-Cloud-Based-Security-
+# Table of Contents
+
+1. [Introduction](#introduction)
+2. [Web Log PROS Analysis - Setup & Execution Guide](#web-log-pros-analysis---setup--execution-guide)
+   * [Prerequisites](#prerequisites)
+   * [Step 1: Download & Organize Logs](#step-1-download--organize-logs)
+   * [Step 2: Parse & Feature Engineering](#step-2-parse--feature-engineering)
+   * [Step 3: Train Clean Distributions (Algorithm 1)](#step-3-train-clean-distributions-algorithm-1)
+   * [Step 4: Run PROS Detection & Evaluation (Algorithm 2)](#step-4-run-pros-detection--evaluation-algorithm-2)
+   * [Troubleshooting](#troubleshooting)
+3. [Youtube Comments Analysis - Setup & Execution Guide](#youtube-comments-analysis---setup--execution-guide)
+
+# Introduction
 This README.md provides the step-by-step instructions needed to run your web log analysis project.
 
 # Web Log PROS Analysis - Setup & Execution Guide
@@ -12,7 +25,7 @@ Ensure you have Python 3.8+ installed. You will need the following Python librar
 ```bash
 pip install pandas numpy scipy scikit-learn matplotlib user-agents geoip2
 ```
-**Important: You also need the GeoLite2-City.mmdb database for IP geolocation (Cuurently provided in the directory, if that does work follow the steps below to install GeoLite2.**
+**Important: You also need the GeoLite2-City.mmdb database for IP geolocation (Cuurently provided in the directory. If that does not work follow, the steps below to install GeoLite2.**
 
 1. Sign up for a free account at MaxMind.
 2. Download the GeoLite2 City database (MMDB format).
@@ -54,7 +67,7 @@ Output: A folder structure (with 2 folders, one for access logs and the other fo
 ## Step 2: Parse & Feature Engineering
 This step contains 2 scripts:
 1. The dataframer script converts the raw text logs into a structured CSV file with the extracted recorded field (IP address, HTTP status, timestamp, etc.)
-2. the labeller script uses the recorded fields to obtain the deatures that are used for buckets (Browser, OsFamily, state, etc.) and then labels the logs if they are a bot or not
+2. the labeller script uses the recorded fields to obtain the features that are used for buckets (Browser, OsFamily, state, etc.) and then labels the logs if they are a bot or not
 
 Check Paths: Update the log_folder path in the script to match where your logs are stored.
 
@@ -80,7 +93,7 @@ Run the Algorithm 1 script:
 ```Bash
 python web_log_PROS_algo1.py
 ```
-Output: A clean_distributions/ folder containing CSV files of probability vectors based on taget feature and conditional feature (e.g., clean_browser_by_family.csv).
+Output: A clean_distributions/ folder containing CSV files of probability vectors based on target feature and conditional feature (e.g., clean_browser_by_family.csv).
 
 ## Step 4: Run PROS Detection & Evaluation (Algorithm 2)
 
@@ -98,8 +111,10 @@ Output:
 
 ## Troubleshooting
 
-1. Memory Error: Step 4 crashes with a MemoryError or ArrayMemoryError if all the data is used for one hot encoding due to a dense matrix so it is very easy for computers to run out of RAM. Due to this Isolation Forest only requires 100,000 rows is statistically sufficient to generate the ROC curve (feel free to change the sample size based on your RAM capacity).
+1. Memory Error: Step 4 crashes with a MemoryError or ArrayMemoryError if all the data is used for one hot encoding due to a dense matrix so it is very easy for computers to run out of RAM. Due to this Isolation Forest only requires 100,000 rows, which is statistically sufficient to generate the ROC curve (feel free to change the sample size based on your RAM capacity).
 
 2. Missing GeoIP: If geolocation columns show "Unknown", ensure GeoLite2-City.mmdb is in the correct folder.
 
 3. Slow Processing: Step 2 may take 5-10 minutes depending on your CPU speed as it processes millions of log lines.
+
+# Youtube Comments Analysis - Setup & Execution Guide
