@@ -25,7 +25,7 @@ Ensure you have Python 3.8+ installed. You will need the following Python librar
 ```bash
 pip install pandas numpy scipy scikit-learn matplotlib user-agents geoip2
 ```
-**Important: You also need the GeoLite2-City.mmdb database for IP geolocation (Cuurently provided in the directory. If that does not work follow, the steps below to install GeoLite2.**
+**Important: You also need the GeoLite2-City.mmdb database for IP geolocation (Cuurently provided in the directory. If that does not work follow, the steps below to install GeoLite2).**
 
 1. Sign up for a free account at MaxMind.
 2. Download the GeoLite2 City database (MMDB format).
