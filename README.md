@@ -69,7 +69,7 @@ This step contains 2 scripts:
 1. The dataframer script converts the raw text logs into a structured CSV file with the extracted recorded field (IP address, HTTP status, timestamp, etc.)
 2. the labeller script uses the recorded fields to obtain the features that are used for buckets (Browser, OsFamily, state, etc.) and then labels the logs if they are a bot or not
 
-Check Paths: Update the log_folder path in the script to match where your logs are stored.
+**Check Paths: Update the log_folder path in the script to match where your logs are stored.**
 
 Run the dataframer script:
 
