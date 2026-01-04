@@ -27,7 +27,7 @@ pip install pandas numpy scipy scikit-learn matplotlib user-agents geoip2
 ```
 **Important: You also need the GeoLite2-City.mmdb database for IP geolocation (Cuurently provided in the directory. If that does not work follow, the steps below to install GeoLite2).**
 
-1. Sign up for a free account at MaxMind.
+1. Sign up for a free account at [MaxMind](https://dev.maxmind.com/geoip/geolite2-free-geolocation-data/).
 2. Download the GeoLite2 City database (MMDB format).
 3. Place GeoLite2-City.mmdb in the root directory of this project.
 
