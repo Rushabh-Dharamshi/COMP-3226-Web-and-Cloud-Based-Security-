@@ -148,6 +148,7 @@ pip install -r requirements.txt
 
 Before analyzing real YouTube data, validate the PROS algorithm on synthetic data with known ground truth:
 
+Navigate to the Code/Youtube Code/ folder and enter:
 
 ```Bash
 python synthetic_pros_evaluation.py
