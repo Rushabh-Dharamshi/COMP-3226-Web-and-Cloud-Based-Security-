@@ -1,0 +1,437 @@
+
+======================================================================
+LOADING DATA
+======================================================================
+Source: c:\Users\rusha\RD Documents\Rushabh's career\Computer Science\University\Year\Year 3\Semester 1\Web and Cloud Based Security\COMP-3226-Web-and-Cloud-Based-Security-\Code\Youtube Data\Youtube_extracted_data.csv
+✓ Loaded 2,129,214 rows with 15 columns
+✓ Unique channels: 1,792,201
+======================================================================
+
+======================================================================
+PROS BOT DETECTION ANALYSIS
+Research Questions from Mid-Term Report
+======================================================================
+
+======================================================================
+FEATURE ENGINEERING (RQ2: Structural & Behavioral Features)
+======================================================================
+
+[1] TEMPORAL FEATURES
+    ✓ Created: comment_hour, comment_dayofweek, time_of_day
+
+[2] ACCOUNT AGE FEATURES (Key Bot Indicator)
+    Created: account_age_days, account_age_bin
+    Account Age Distribution:
+       1-3m: 3.7%
+       1-7d: 0.9%
+       1w-1m: 2.1%
+       3m-1y: 10.4%
+       <1d: 56.4%
+       >1y: 26.4%
+
+[3] ENGAGEMENT FEATURES
+     Created: commentLikeCount, has_likes, likes_bin
+     27.6% of comments have likes
+
+[4] CHANNEL MATURITY FEATURES (Novel Contribution)
+    ✓ Created: subscriber_bin, video_count_bin
+
+[5] BEHAVIORAL FEATURES (Coordination Detection)
+     Created: is_duplicate
+     0.0% of comments are duplicates (possible coordination)
+
+[6] PROFILE COMPLETENESS FEATURES
+     Created: profile_complete_score, profile_complete_bin
+     Profile Completeness:
+       High: 7.3%
+       Low: 65.6%
+       Medium: 27.1%
+       None: 0.0%
+
+[7] VELOCITY FEATURES (Commenter Mob Detection)
+     Created: comments_per_video, comments_per_video_bin
+     654 channels with >10 comments/video (high velocity)
+
+[8] GENRE FEATURES (RQ4 Analysis)
+     Created: genre_group
+     Top Genres:
+       Entertainment: 511,376 comments
+       Music: 412,611 comments
+       Education: 253,996 comments
+       News & Politics: 209,894 comments
+       People & Blogs: 169,690 comments
+
+======================================================================
+✓ Feature engineering complete: 33 total features
+======================================================================
+
+======================================================================
+CONDITIONAL INDEPENDENCE RULES (RQ2: Feature Relationships)
+======================================================================
+
+These rules encode domain knowledge about YouTube behavior:
+
+[Rationale]
+
+  account_age_bin ⊥ ['time_of_day', 'subscriber_bin']
+     → Account age shouldn't depend on time of day or channel size
+
+  subscriber_bin ⊥ ['genre_group', 'comments_per_video_bin']
+     → Channel size shouldn't depend on genre or posting velocity
+
+  profile_complete_bin ⊥ ['account_age_bin', 'likes_bin']
+
+  time_of_day ⊥ ['subscriber_bin', 'video_count_bin']
+     → Posting time shouldn't depend on channel metrics
+
+  is_duplicate ⊥ ['genre_group', 'account_age_bin']
+     → Duplicate behavior shouldn't depend on genre or account age
+
+  comments_per_video_bin ⊥ ['genre_group', 'subscriber_bin']
+     → Velocity shouldn't depend on genre or channel size
+
+======================================================================
+
+======================================================================
+ALGORITHM 1: ESTIMATING CLEAN DISTRIBUTIONS (RQ1)
+======================================================================
+
+Objective: Identify 'unattacked bins' to model normal behavior
+Method: Find feature values with similar conditional distributions
+======================================================================
+
+    Processing account_age_bin...
+    → Collected 10 candidate distributions
+    ✓ Found 9 UNATTACKED bins (clean traffic cluster)
+    Processing subscriber_bin...
+    → Collected 16 candidate distributions
+    ✓ Found 16 UNATTACKED bins (clean traffic cluster)
+    Processing profile_complete_bin...
+    → Collected 12 candidate distributions
+    ✓ Found 12 UNATTACKED bins (clean traffic cluster)
+    Processing time_of_day...
+    → Collected 12 candidate distributions
+    ✓ Found 12 UNATTACKED bins (clean traffic cluster)
+    Processing is_duplicate...
+    → Collected 17 candidate distributions
+    ✓ Found 17 UNATTACKED bins (clean traffic cluster)
+    Processing comments_per_video_bin...
+    → Collected 17 candidate distributions
+    ✓ Found 16 UNATTACKED bins (clean traffic cluster)
+
+======================================================================
+✓ RQ1 SUCCESS: Estimated clean distributions for 6/6 features
+======================================================================
+
+[Clean Distribution Summary]
+  • account_age_bin: 6 categories, 9 unattacked bins
+  • subscriber_bin: 6 categories, 16 unattacked bins
+  • profile_complete_bin: 4 categories, 12 unattacked bins
+  • time_of_day: 4 categories, 12 unattacked bins
+  • is_duplicate: 1 categories, 17 unattacked bins
+  • comments_per_video_bin: 5 categories, 16 unattacked bins
+
+======================================================================
+ALGORITHM 2: CALCULATING ANOMALY SCORES (RQ1 + RQ3)
+======================================================================
+
+Method: Compare observed joint probability vs. clean joint probability
+Formula: Score = P_obs(Tuple) / (α × P_clean(Tuple)) - 1
+======================================================================
+
+[Scoring Features] Using 5-tuple: ['account_age_bin', 'subscriber_bin', 'comments_per_video_bin', 'profile_complete_bin', 'is_duplicate']
+
+
+[Calculating Observed Frequencies]
+
+[Computing Bot Likelihood Scores]
+
+======================================================================
+✓ SCORING COMPLETE:
+======================================================================
+  Score Range: [0.0000, 534.4172]
+  Mean Score: 1.9902
+  Median Score: 1.1172
+  90th Percentile: 3.2893
+  95th Percentile: 5.3155
+  99th Percentile: 15.4246
+======================================================================
+
+======================================================================
+GENERATING INTERPRETABLE RULES (RQ3)
+======================================================================
+
+Objective: Translate anomaly scores into actionable, human-readable rules
+======================================================================
+
+[Top Suspicious Channels]
+
+  #1. Channel: SmarterEveryDay
+       Score: 534.417
+       Rule: Account Age: <1d AND Velocity: >10 comments/video
+       Genre: Education
+
+  #2. Channel: Veritasium
+       Score: 534.417
+       Rule: Account Age: <1d AND Velocity: >10 comments/video
+       Genre: Education
+
+  #3. Channel: funny3 vedios
+       Score: 68.073
+       Rule: Account Age: 3m-1y AND Velocity: 6-10 comments/video
+       Genre: Gaming
+
+  #4. Channel: None
+       Score: 65.166
+       Rule: Account Age: <1d AND Velocity: 4-5 comments/video
+       Genre: Science & Technology
+
+  #5. Channel: None
+       Score: 65.166
+       Rule: Account Age: <1d AND Velocity: 4-5 comments/video
+       Genre: Science & Technology
+
+  #6. Channel: None
+       Score: 65.166
+       Rule: Account Age: <1d AND Velocity: 4-5 comments/video
+       Genre: None
+
+  #7. Channel: Unknown r marak 
+       Score: 57.906
+       Rule: Account Age: 1w-1m AND Velocity: 2-3 comments/video
+       Genre: Music
+
+  #8. Channel: None
+       Score: 31.754
+       Rule: Account Age: <1d AND Velocity: 1 comments/video
+       Genre: Science & Technology
+
+  #9. Channel: None
+       Score: 31.754
+       Rule: Account Age: <1d AND Velocity: 1 comments/video
+       Genre: Science & Technology
+
+  #10. Channel: None
+       Score: 31.754
+       Rule: Account Age: <1d AND Velocity: 1 comments/video
+       Genre: Science & Technology
+
+  #11. Channel: None
+       Score: 31.754
+       Rule: Account Age: <1d AND Velocity: 1 comments/video
+       Genre: Science & Technology
+
+  #12. Channel: kjs8719
+       Score: 31.754
+       Rule: Account Age: <1d AND Velocity: 2-3 comments/video
+       Genre: Science & Technology
+
+  #13. Channel: None
+       Score: 31.754
+       Rule: Account Age: <1d AND Velocity: 1 comments/video
+       Genre: Science & Technology
+
+  #14. Channel: None
+       Score: 31.754
+       Rule: Account Age: <1d AND Velocity: 1 comments/video
+       Genre: Science & Technology
+
+  #15. Channel: None
+       Score: 31.754
+       Rule: Account Age: <1d AND Velocity: 1 comments/video
+       Genre: Science & Technology
+
+  #16. Channel: None
+       Score: 31.754
+       Rule: Account Age: <1d AND Velocity: 1 comments/video
+       Genre: Science & Technology
+
+  #17. Channel: None
+       Score: 31.754
+       Rule: Account Age: <1d AND Velocity: 1 comments/video
+       Genre: Science & Technology
+
+  #18. Channel: None
+       Score: 31.754
+       Rule: Account Age: <1d AND Velocity: 1 comments/video
+       Genre: Science & Technology
+
+  #19. Channel: None
+       Score: 31.754
+       Rule: Account Age: <1d AND Velocity: 1 comments/video
+       Genre: Science & Technology
+
+  #20. Channel: Caleb
+       Score: 31.754
+       Rule: Account Age: <1d AND Velocity: 1 comments/video
+       Genre: Science & Technology
+
+======================================================================
+✓ Generated 20 interpretable rules
+======================================================================
+
+======================================================================
+ANALYZING CHANNEL CATEGORIES (RQ4)
+======================================================================
+
+Objective: Identify which YouTube genres/categories have highest bot activity
+======================================================================
+
+[Genre-Level Bot Analysis]
+
+  2. Education
+     Risk Level: 🔴 VERY HIGH (Score: 2.416)
+     Volume: 253,996 comments from 219,958 channels
+     Duplicate Rate: 0.0%
+
+  10. Science & Technology
+     Risk Level: 🔴 VERY HIGH (Score: 2.302)
+     Volume: 107,947 comments from 100,069 channels
+     Duplicate Rate: 0.0%
+
+  6. Music
+     Risk Level: 🔴 VERY HIGH (Score: 2.255)
+     Volume: 412,611 comments from 347,653 channels
+     Duplicate Rate: 0.0%
+
+  3. Entertainment
+     Risk Level: 🔴 VERY HIGH (Score: 1.875)
+     Volume: 511,376 comments from 450,307 channels
+     Duplicate Rate: 0.0%
+
+  8. Other
+     Risk Level: 🔴 VERY HIGH (Score: 1.853)
+     Volume: 101,616 comments from 95,463 channels
+     Duplicate Rate: 0.0%
+
+  5. Gaming
+     Risk Level: 🔴 VERY HIGH (Score: 1.827)
+     Volume: 99,347 comments from 92,508 channels
+     Duplicate Rate: 0.0%
+
+  9. People & Blogs
+     Risk Level: 🔴 VERY HIGH (Score: 1.802)
+     Volume: 169,690 comments from 147,846 channels
+     Duplicate Rate: 0.0%
+
+  11. Sports
+     Risk Level: 🔴 VERY HIGH (Score: 1.787)
+     Volume: 117,567 comments from 108,196 channels
+     Duplicate Rate: 0.0%
+
+  4. Film & Animation
+     Risk Level: 🔴 VERY HIGH (Score: 1.780)
+     Volume: 42,662 comments from 40,710 channels
+     Duplicate Rate: 0.0%
+
+  1. Comedy
+     Risk Level: 🔴 VERY HIGH (Score: 1.726)
+     Volume: 102,508 comments from 96,776 channels
+     Duplicate Rate: 0.0%
+
+======================================================================
+✓ Analyzed 11 genres/categories
+======================================================================
+
+======================================================================
+BASELINE COMPARISON: Isolation Forest
+======================================================================
+
+[Configuration]
+  Features: ['account_age_bin', 'subscriber_bin', 'video_count_bin', 'time_of_day', 'profile_complete_bin']
+  Contamination rate: 10.0%
+  Encoded dimensions: 26
+
+[Training Isolation Forest...]
+
+[Comparison Results]
+  Agreement rate: 89.8%
+  PROS flagged: 9,557 (9.6%)
+  Isolation Forest flagged: 9,977 (10.0%)
+  Precision (IF vs PROS): 46.8%
+  Recall (IF vs PROS): 48.8%
+======================================================================
+
+======================================================================
+RESEARCH QUESTIONS SUMMARY
+======================================================================
+
+[RQ1: Unsupervised Anomaly Detection]
+  Question: How can unsupervised anomaly detection identify automated
+           commenting behaviour without relying on labelled data?
+
+  Answer:
+    ✓ Successfully identified clean distributions for 6 features
+    ✓ Success rate: 100.0%
+    ✓ Method: Algorithm 1 (find unattacked bins) + Algorithm 2 (anomaly scoring)
+    ✓ Features used: account_age_bin, subscriber_bin, profile_complete_bin, time_of_day, is_duplicate, comments_per_video_bin
+
+[RQ2: Structural and Behavioral Features]
+  Question: Which features most effectively differentiate bots from humans?
+
+  Answer:
+    Feature Importance (by unattacked bin discovery):
+      • subscriber_bin: High (16 clean bins, 100.0% effectiveness)
+      • profile_complete_bin: High (12 clean bins, 100.0% effectiveness)
+      • time_of_day: High (12 clean bins, 100.0% effectiveness)
+      • is_duplicate: High (17 clean bins, 100.0% effectiveness)
+      • comments_per_video_bin: High (16 clean bins, 94.1% effectiveness)
+
+[RQ3: Interpretability]
+  Question: How can PROS remain interpretable to human analysts?
+
+  Answer:
+    ✓ Generated 20 human-readable rules
+    ✓ Average anomaly score (top 10): 148.557
+    ✓ Rules based on: pros_anomaly_score, channelTitle, videoGenre, is_duplicate, account_age_bin, comments_per_video_bin
+    ✓ Format: IF [Feature Combination] THEN [Bot Likelihood = X]
+
+[RQ4: Category Analysis]
+  Question: What YouTube channel categories have the most bot traffic?
+
+  Answer:
+    ✓ Analyzed 11 categories
+    ✓ Highest risk: Education (score: 2.416)
+    ✓ Lowest risk: News & Politics (score: 1.657)
+
+======================================================================
+
+✓ Saved genre analysis: c:\Users\rusha\RD Documents\Rushabh's career\Computer Science\University\Year\Year 3\Semester 1\Web and Cloud Based Security\COMP-3226-Web-and-Cloud-Based-Security-\Code\Youtube Results\pros_genre_analysis_20260105_074612.csv
+✓ Saved clean distributions: c:\Users\rusha\RD Documents\Rushabh's career\Computer Science\University\Year\Year 3\Semester 1\Web and Cloud Based Security\COMP-3226-Web-and-Cloud-Based-Security-\Code\Youtube Results\pros_clean_distributions_20260105_074612.json
+✓ Saved RQ metrics: c:\Users\rusha\RD Documents\Rushabh's career\Computer Science\University\Year\Year 3\Semester 1\Web and Cloud Based Security\COMP-3226-Web-and-Cloud-Based-Security-\Code\Youtube Results\pros_rq_metrics_20260105_074612.json
+
+======================================================================
+CREATING VISUALIZATION 1: RESEARCH QUESTIONS OVERVIEW
+======================================================================
+✓ Visualization 1 saved: c:\Users\rusha\RD Documents\Rushabh's career\Computer Science\University\Year\Year 3\Semester 1\Web and Cloud Based Security\COMP-3226-Web-and-Cloud-Based-Security-\Code\Youtube Results\pros_visualization_1_rq_overview.png
+
+======================================================================
+CREATING VISUALIZATION 2: DETAILED FEATURE ANALYSIS
+======================================================================
+✓ Visualization 2 saved: c:\Users\rusha\RD Documents\Rushabh's career\Computer Science\University\Year\Year 3\Semester 1\Web and Cloud Based Security\COMP-3226-Web-and-Cloud-Based-Security-\Code\Youtube Results\pros_visualization_2_feature_analysis.png
+
+======================================================================
+VISUALIZATION SUMMARY
+======================================================================
+
+Created 2 clear, non-overlapping visualizations:
+
+[Visualization 1: Research Questions Overview]
+  • RQ1: Score distribution with statistics
+  • RQ2: Feature effectiveness (unattacked bins)
+  • RQ4: Top risky genres
+  • RQ Summary: Key metrics dashboard
+  → Saved as: c:\Users\rusha\RD Documents\Rushabh's career\Computer Science\University\Year\Year 3\Semester 1\Web and Cloud Based Security\COMP-3226-Web-and-Cloud-Based-Security-\Code\Youtube Results\pros_visualization_1_rq_overview.png
+
+[Visualization 2: Detailed Feature Analysis]
+  • Account Age: Bot likelihood by account age
+  • Posting Velocity: Comments per video analysis
+  • Profile Completeness: Profile quality impact
+  • Top Channels: Interpretable detection rules
+  → Saved as: c:\Users\rusha\RD Documents\Rushabh's career\Computer Science\University\Year\Year 3\Semester 1\Web and Cloud Based Security\COMP-3226-Web-and-Cloud-Based-Security-\Code\Youtube Results\pros_visualization_2_feature_analysis.png
+
+======================================================================
+
+======================================================================
+ANALYSIS COMPLETE!
+======================================================================

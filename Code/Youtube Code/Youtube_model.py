@@ -636,7 +636,7 @@ class PROSDetector:
             rules.append(rule)
             
             # Print human-readable rule
-            if i < 10:  # Print top 10
+            if i < 20:  # Print top 20
                 print(f"  #{i+1}. Channel: {rule['channel']}")
                 print(f"       Score: {rule['score']:.3f}")
                 print(f"       Rule: {rule['rule']}")

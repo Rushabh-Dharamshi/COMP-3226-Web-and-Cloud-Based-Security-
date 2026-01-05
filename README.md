@@ -148,6 +148,10 @@ Run the PROS algorithm:
 python Youtube_model.py
 ```
 
+What this python file does:
+
+- The youtube_model.py implements the PROS (Pivot and Seek Rank-One Submatrix) algorithm for unsupervised bot detection on YouTube comments. It processes categorical features like account age, posting velocity, and profile completeness to estimate clean behavior distributions and identify suspicious activity without labeled data.
+
 
 Outputs in the Youtube Results/ folder:
 
