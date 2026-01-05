@@ -10,6 +10,10 @@
    * [Step 4: Run PROS Detection & Evaluation (Algorithm 2)](#step-4-run-pros-detection--evaluation-algorithm-2)
    * [Troubleshooting](#troubleshooting)
 3. [Youtube Comments Analysis - Setup & Execution Guide](#youtube-comments-analysis---setup--execution-guide)
+   * [Data Extraction](#data-extraction)
+   * [Prequisites - Delete Youtube Results folder](#prequisite-delete-youtube-results-folder)
+   * [Step 1: Run PROS Analysis on Youtube Comments](#step-1-run-pros-analysis-on-youtube-comments)
+   * [Step 2: Run Synthetic Data Evaluation](#step-2-run-synthetic-data-evaluation)
 
 # Introduction
 This README.md provides the step-by-step instructions needed to run the web log and YouTube comment analysis project. The purpose of the weblog dataset is to prove that the PROS algoritihm works based on ground truth labels. 
@@ -118,3 +122,62 @@ Output:
 3. Slow Processing: Step 2 may take 5-10 minutes depending on your CPU speed as it processes millions of log lines.
 
 # Youtube Comments Analysis - Setup & Execution Guide
+
+## Data Extraction
+
+- All the data has been collected for us in Code/Youtube Data/ folder. 
+
+- You do not need to run extraction scripts as the files already exist. 
+
+- Youtube_extracted_data.json → Final consolidated dataset (Json version)
+
+- Youtube_extracted_data.csv → Final consolidated dataset (csv version)
+
+## Prequisite: Delete Youtube Results folder
+
+- You must delete the Youtube Results folder if you want to run the python files to produce the results
+
+
+## Step 1: Run PROS Analysis on YouTube Comments
+
+Navigate to the Code/Youtube Code/ folder:
+
+Run the PROS algorithm:
+
+```Bash
+python Youtube_model.py
+```
+
+
+Outputs in the Youtube Results/ folder:
+
+
+- pros_terminal_output_[TIMESTAMP].txt:	Full console log of PROS execution
+- pros_visualization_1_rq_overview.png: Overview dashboard (score distribution, feature importance, genre analysis)
+- pros_visualization_2_feature_analysis.png: Feature analysis plots (Average Bot Score against account age, posting velocity, profile completeness and a list of top suspicious channels)
+
+- pros_genre_analysis_[TIMESTAMP].csv:	Genre-level bot likelihood statistics
+- pros_clean_distributions_[TIMESTAMP].json	Estimated clean distributions for each feature
+- pros_rq_metrics_[TIMESTAMP].json	Performance metrics and evaluation results
+
+
+## Step 2: Run Synthetic Data Evaluation
+
+```Bash
+python synthetic_pros_evaluation.py
+```
+- Generates realistic synthetic YouTube data with known bot/human labels
+
+- Tests PROS performance at different bot fractions (5%, 10%, 20%, 30%)
+
+- Compares PROS against Isolation Forest
+
+- Produces detailed visualizations
+
+
+
+Outputs in Youtube Results/ folder:
+
+- synthetic_improved_output_[TIMESTAMP].txt:	Console log of all synthetic tests and performance metrics
+- synthetic_improved_summary_[TIMESTAMP].csv:	Performance summary across bot fractions and thresholds
+- synthetic_zoomed_visualization_[TIMESTAMP].png:	Four-panel visualization: F1-Score, Precision, Recall, and Score Distribution with stats
