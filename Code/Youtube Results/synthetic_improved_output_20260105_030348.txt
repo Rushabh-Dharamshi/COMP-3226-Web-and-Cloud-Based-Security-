@@ -1,0 +1,1368 @@
+======================================================================
+IMPROVED SYNTHETIC VALIDATION - PROS BOT DETECTION
+======================================================================
+Data: 1000 channels × 5000 comments = 5,000,000 total
+Bot fractions: [0.05, 0.1, 0.2, 0.3]
+Top-K thresholds: [0.05, 0.1, 0.15]
+======================================================================
+
+========================================
+Bot fraction = 5%
+========================================
+Generated: 5,000,000 comments (265,000 bots = 5.3%)
+======================================================================
+PROS BOT DETECTION ANALYSIS
+Research Questions from Mid-Term Report
+======================================================================
+
+======================================================================
+FEATURE ENGINEERING (RQ2: Structural & Behavioral Features)
+======================================================================
+
+[1] TEMPORAL FEATURES
+    ✓ Created: comment_hour, comment_dayofweek, time_of_day
+
+[2] ACCOUNT AGE FEATURES (Key Bot Indicator)
+    Created: account_age_days, account_age_bin
+    Account Age Distribution:
+       1-3m: 6.0%
+       1-7d: 0.6%
+       1w-1m: 2.3%
+       3m-1y: 27.5%
+       <1d: 0.2%
+       >1y: 63.4%
+
+[3] ENGAGEMENT FEATURES
+     Created: commentLikeCount, has_likes, likes_bin
+     84.0% of comments have likes
+
+[4] CHANNEL MATURITY FEATURES (Novel Contribution)
+    ✓ Created: subscriber_bin, video_count_bin
+
+[5] BEHAVIORAL FEATURES (Coordination Detection)
+     Created: is_duplicate
+     100.0% of comments are duplicates (possible coordination)
+
+[6] PROFILE COMPLETENESS FEATURES
+     Created: profile_complete_score, profile_complete_bin
+     Profile Completeness:
+       High: 48.4%
+       Low: 10.4%
+       Medium: 40.5%
+       None: 0.8%
+
+[7] VELOCITY FEATURES (Commenter Mob Detection)
+     Created: comments_per_video, comments_per_video_bin
+     0 channels with >10 comments/video (high velocity)
+
+[8] GENRE FEATURES (RQ4 Analysis)
+     Created: genre_group
+     Top Genres:
+       Sports: 715,384 comments
+       Education: 715,366 comments
+       Howto & Style: 714,907 comments
+       News & Politics: 714,112 comments
+       Entertainment: 713,823 comments
+
+======================================================================
+✓ Feature engineering complete: 36 total features
+======================================================================
+
+Using synthetic-optimized conditional independence rules...
+Optimized rules:
+  account_age_bin ⊥ ['time_of_day', 'subscriber_bin']
+  subscriber_bin ⊥ ['genre_group', 'comments_per_video_bin']
+  profile_complete_bin ⊥ ['account_age_bin', 'likes_bin']
+  time_of_day ⊥ ['subscriber_bin', 'video_count_bin']
+  comments_per_video_bin ⊥ ['genre_group', 'subscriber_bin']
+  genre_group ⊥ ['account_age_bin', 'subscriber_bin']
+
+======================================================================
+ALGORITHM 1: ESTIMATING CLEAN DISTRIBUTIONS (RQ1)
+======================================================================
+
+Objective: Identify 'unattacked bins' to model normal behavior
+Method: Find feature values with similar conditional distributions
+======================================================================
+
+    Processing account_age_bin...
+    → Collected 5 candidate distributions
+    ✓ Found 5 UNATTACKED bins (clean traffic cluster)
+    Processing subscriber_bin...
+    → Collected 8 candidate distributions
+    ✓ Found 8 UNATTACKED bins (clean traffic cluster)
+    Processing profile_complete_bin...
+    → Collected 11 candidate distributions
+    ✓ Found 11 UNATTACKED bins (clean traffic cluster)
+    Processing time_of_day...
+    → Collected 9 candidate distributions
+    ✓ Found 9 UNATTACKED bins (clean traffic cluster)
+    Processing comments_per_video_bin...
+    → Collected 11 candidate distributions
+    ✓ Found 11 UNATTACKED bins (clean traffic cluster)
+    Processing genre_group...
+    → Collected 10 candidate distributions
+    ✓ Found 10 UNATTACKED bins (clean traffic cluster)
+
+======================================================================
+✓ RQ1 SUCCESS: Estimated clean distributions for 6/6 features
+======================================================================
+
+[Clean Distribution Summary]
+  • account_age_bin: 6 categories, 5 unattacked bins
+  • subscriber_bin: 6 categories, 8 unattacked bins
+  • profile_complete_bin: 4 categories, 11 unattacked bins
+  • time_of_day: 4 categories, 9 unattacked bins
+  • comments_per_video_bin: 5 categories, 11 unattacked bins
+  • genre_group: 7 categories, 10 unattacked bins
+
+======================================================================
+ALGORITHM 2: CALCULATING ANOMALY SCORES (RQ1 + RQ3)
+======================================================================
+
+Method: Compare observed joint probability vs. clean joint probability
+Formula: Score = P_obs(Tuple) / (α × P_clean(Tuple)) - 1
+======================================================================
+
+[Scoring Features] Using 5-tuple: ['account_age_bin', 'subscriber_bin', 'genre_group', 'comments_per_video_bin', 'profile_complete_bin']
+
+
+[Calculating Observed Frequencies]
+
+[Computing Bot Likelihood Scores]
+
+======================================================================
+✓ SCORING COMPLETE:
+======================================================================
+  Score Range: [0.0000, 73.7800]
+  Mean Score: 1.0033
+  Median Score: 0.9908
+  90th Percentile: 1.0694
+  95th Percentile: 1.0774
+  99th Percentile: 1.0843
+======================================================================
+
+======================================================================
+GENERATING INTERPRETABLE RULES (RQ3)
+======================================================================
+
+Objective: Translate anomaly scores into actionable, human-readable rules
+======================================================================
+
+[Top Suspicious Channels]
+
+  #1. Channel: Channel_726
+       Score: 73.780
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: Education
+
+  #2. Channel: Channel_869
+       Score: 5.575
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: Music
+
+  #3. Channel: Channel_153
+       Score: 4.271
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: Entertainment
+
+  #4. Channel: Channel_697
+       Score: 4.271
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: Entertainment
+
+  #5. Channel: Channel_970
+       Score: 4.271
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: Entertainment
+
+  #6. Channel: Channel_806
+       Score: 2.312
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: Entertainment
+
+  #7. Channel: Channel_980
+       Score: 2.312
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: Entertainment
+
+  #8. Channel: Channel_660
+       Score: 2.312
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: Entertainment
+
+  #9. Channel: Channel_597
+       Score: 2.128
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: Entertainment
+
+  #10. Channel: Channel_607
+       Score: 2.128
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: Entertainment
+
+======================================================================
+✓ Generated 20 interpretable rules
+======================================================================
+
+======================================================================
+ANALYZING CHANNEL CATEGORIES (RQ4)
+======================================================================
+
+Objective: Identify which YouTube genres/categories have highest bot activity
+======================================================================
+
+[Genre-Level Bot Analysis]
+
+  6. News & Politics
+     Risk Level: 🔴 VERY HIGH (Score: 1.012)
+     Volume: 714,112 comments from 1,000 channels
+     Duplicate Rate: 100.0%
+
+  3. Gaming
+     Risk Level: 🔴 VERY HIGH (Score: 1.011)
+     Volume: 713,652 comments from 1,000 channels
+     Duplicate Rate: 100.0%
+
+  5. Music
+     Risk Level: 🔴 VERY HIGH (Score: 1.005)
+     Volume: 712,756 comments from 1,000 channels
+     Duplicate Rate: 100.0%
+
+  7. Sports
+     Risk Level: 🔴 VERY HIGH (Score: 1.003)
+     Volume: 715,384 comments from 1,000 channels
+     Duplicate Rate: 100.0%
+
+  1. Education
+     Risk Level: 🟠 HIGH (Score: 1.000)
+     Volume: 715,366 comments from 1,000 channels
+     Duplicate Rate: 100.0%
+
+  4. Howto & Style
+     Risk Level: 🟠 HIGH (Score: 1.000)
+     Volume: 714,907 comments from 1,000 channels
+     Duplicate Rate: 100.0%
+
+  2. Entertainment
+     Risk Level: 🟠 HIGH (Score: 0.993)
+     Volume: 713,823 comments from 1,000 channels
+     Duplicate Rate: 100.0%
+
+======================================================================
+✓ Analyzed 7 genres/categories
+======================================================================
+
+======================================================================
+BASELINE COMPARISON: Isolation Forest
+======================================================================
+
+[Configuration]
+  Features: ['account_age_bin', 'subscriber_bin', 'video_count_bin', 'time_of_day', 'profile_complete_bin']
+  Contamination rate: 10.0%
+  Encoded dimensions: 26
+
+[Training Isolation Forest...]
+
+[Comparison Results]
+  Agreement rate: 83.1%
+  PROS flagged: 9,003 (9.0%)
+  Isolation Forest flagged: 9,855 (9.9%)
+  Precision (IF vs PROS): 9.7%
+  Recall (IF vs PROS): 10.6%
+======================================================================
+
+======================================================================
+RESEARCH QUESTIONS SUMMARY
+======================================================================
+
+[RQ1: Unsupervised Anomaly Detection]
+  Question: How can unsupervised anomaly detection identify automated
+           commenting behaviour without relying on labelled data?
+
+  Answer:
+    ✓ Successfully identified clean distributions for 6 features
+    ✓ Success rate: 100.0%
+    ✓ Method: Algorithm 1 (find unattacked bins) + Algorithm 2 (anomaly scoring)
+    ✓ Features used: account_age_bin, subscriber_bin, profile_complete_bin, time_of_day, comments_per_video_bin, genre_group
+
+[RQ2: Structural and Behavioral Features]
+  Question: Which features most effectively differentiate bots from humans?
+
+  Answer:
+    Feature Importance (by unattacked bin discovery):
+      • account_age_bin: High (5 clean bins, 100.0% effectiveness)
+      • subscriber_bin: High (8 clean bins, 100.0% effectiveness)
+      • profile_complete_bin: High (11 clean bins, 100.0% effectiveness)
+      • time_of_day: High (9 clean bins, 100.0% effectiveness)
+      • comments_per_video_bin: High (11 clean bins, 100.0% effectiveness)
+
+[RQ3: Interpretability]
+  Question: How can PROS remain interpretable to human analysts?
+
+  Answer:
+    ✓ Generated 20 human-readable rules
+    ✓ Average anomaly score (top 10): 10.336
+    ✓ Rules based on: pros_anomaly_score, channelTitle, videoGenre, is_duplicate, account_age_bin, comments_per_video_bin
+    ✓ Format: IF [Feature Combination] THEN [Bot Likelihood = X]
+
+[RQ4: Category Analysis]
+  Question: What YouTube channel categories have the most bot traffic?
+
+  Answer:
+    ✓ Analyzed 7 categories
+    ✓ Highest risk: News & Politics (score: 1.012)
+    ✓ Lowest risk: Entertainment (score: 0.993)
+
+======================================================================
+[PROS] Top-5% | P=0.117 R=0.113 F1=0.115
+[PROS] Top-10% | P=0.068 R=0.132 F1=0.090
+[PROS] Top-15% | P=0.061 R=0.189 F1=0.092
+
+======================================================================
+BASELINE COMPARISON: Isolation Forest
+======================================================================
+
+[Configuration]
+  Features: ['account_age_bin', 'subscriber_bin', 'video_count_bin', 'time_of_day', 'profile_complete_bin']
+  Contamination rate: 10.0%
+  Encoded dimensions: 26
+
+[Training Isolation Forest...]
+
+[Comparison Results]
+  Agreement rate: 82.9%
+  PROS flagged: 443,526 (8.9%)
+  Isolation Forest flagged: 489,234 (9.8%)
+  Precision (IF vs PROS): 8.0%
+  Recall (IF vs PROS): 8.8%
+======================================================================
+[IsolationForest] P=0.049 R=0.090 F1=0.063
+
+========================================
+Bot fraction = 10%
+========================================
+Generated: 5,000,000 comments (450,000 bots = 9.0%)
+======================================================================
+PROS BOT DETECTION ANALYSIS
+Research Questions from Mid-Term Report
+======================================================================
+
+======================================================================
+FEATURE ENGINEERING (RQ2: Structural & Behavioral Features)
+======================================================================
+
+[1] TEMPORAL FEATURES
+    ✓ Created: comment_hour, comment_dayofweek, time_of_day
+
+[2] ACCOUNT AGE FEATURES (Key Bot Indicator)
+    Created: account_age_days, account_age_bin
+    Account Age Distribution:
+       1-3m: 6.0%
+       1-7d: 0.6%
+       1w-1m: 2.3%
+       3m-1y: 27.5%
+       <1d: 0.2%
+       >1y: 63.4%
+
+[3] ENGAGEMENT FEATURES
+     Created: commentLikeCount, has_likes, likes_bin
+     82.2% of comments have likes
+
+[4] CHANNEL MATURITY FEATURES (Novel Contribution)
+    ✓ Created: subscriber_bin, video_count_bin
+
+[5] BEHAVIORAL FEATURES (Coordination Detection)
+     Created: is_duplicate
+     100.0% of comments are duplicates (possible coordination)
+
+[6] PROFILE COMPLETENESS FEATURES
+     Created: profile_complete_score, profile_complete_bin
+     Profile Completeness:
+       High: 47.0%
+       Low: 11.2%
+       Medium: 40.9%
+       None: 1.0%
+
+[7] VELOCITY FEATURES (Commenter Mob Detection)
+     Created: comments_per_video, comments_per_video_bin
+     0 channels with >10 comments/video (high velocity)
+
+[8] GENRE FEATURES (RQ4 Analysis)
+     Created: genre_group
+     Top Genres:
+       Sports: 715,292 comments
+       Entertainment: 715,279 comments
+       Howto & Style: 714,274 comments
+       News & Politics: 714,259 comments
+       Education: 714,207 comments
+
+======================================================================
+✓ Feature engineering complete: 36 total features
+======================================================================
+
+Using synthetic-optimized conditional independence rules...
+Optimized rules:
+  account_age_bin ⊥ ['time_of_day', 'subscriber_bin']
+  subscriber_bin ⊥ ['genre_group', 'comments_per_video_bin']
+  profile_complete_bin ⊥ ['account_age_bin', 'likes_bin']
+  time_of_day ⊥ ['subscriber_bin', 'video_count_bin']
+  comments_per_video_bin ⊥ ['genre_group', 'subscriber_bin']
+  genre_group ⊥ ['account_age_bin', 'subscriber_bin']
+
+======================================================================
+ALGORITHM 1: ESTIMATING CLEAN DISTRIBUTIONS (RQ1)
+======================================================================
+
+Objective: Identify 'unattacked bins' to model normal behavior
+Method: Find feature values with similar conditional distributions
+======================================================================
+
+    Processing account_age_bin...
+    → Collected 5 candidate distributions
+    ✓ Found 5 UNATTACKED bins (clean traffic cluster)
+    Processing subscriber_bin...
+    → Collected 8 candidate distributions
+    ✓ Found 8 UNATTACKED bins (clean traffic cluster)
+    Processing profile_complete_bin...
+    → Collected 11 candidate distributions
+    ✓ Found 11 UNATTACKED bins (clean traffic cluster)
+    Processing time_of_day...
+    → Collected 9 candidate distributions
+    ✓ Found 9 UNATTACKED bins (clean traffic cluster)
+    Processing comments_per_video_bin...
+    → Collected 11 candidate distributions
+    ✓ Found 11 UNATTACKED bins (clean traffic cluster)
+    Processing genre_group...
+    → Collected 10 candidate distributions
+    ✓ Found 10 UNATTACKED bins (clean traffic cluster)
+
+======================================================================
+✓ RQ1 SUCCESS: Estimated clean distributions for 6/6 features
+======================================================================
+
+[Clean Distribution Summary]
+  • account_age_bin: 6 categories, 5 unattacked bins
+  • subscriber_bin: 6 categories, 8 unattacked bins
+  • profile_complete_bin: 4 categories, 11 unattacked bins
+  • time_of_day: 4 categories, 9 unattacked bins
+  • comments_per_video_bin: 5 categories, 11 unattacked bins
+  • genre_group: 7 categories, 10 unattacked bins
+
+======================================================================
+ALGORITHM 2: CALCULATING ANOMALY SCORES (RQ1 + RQ3)
+======================================================================
+
+Method: Compare observed joint probability vs. clean joint probability
+Formula: Score = P_obs(Tuple) / (α × P_clean(Tuple)) - 1
+======================================================================
+
+[Scoring Features] Using 5-tuple: ['account_age_bin', 'subscriber_bin', 'genre_group', 'comments_per_video_bin', 'profile_complete_bin']
+
+
+[Calculating Observed Frequencies]
+
+[Computing Bot Likelihood Scores]
+
+======================================================================
+✓ SCORING COMPLETE:
+======================================================================
+  Score Range: [0.0000, 11.2571]
+  Mean Score: 1.0026
+  Median Score: 1.0010
+  90th Percentile: 1.0767
+  95th Percentile: 1.0818
+  99th Percentile: 1.2461
+======================================================================
+
+======================================================================
+GENERATING INTERPRETABLE RULES (RQ3)
+======================================================================
+
+Objective: Translate anomaly scores into actionable, human-readable rules
+======================================================================
+
+[Top Suspicious Channels]
+
+  #1. Channel: Channel_819
+       Score: 11.257
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: Education
+
+  #2. Channel: Channel_471
+       Score: 2.280
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: News & Politics
+
+  #3. Channel: Channel_122
+       Score: 2.280
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: News & Politics
+
+  #4. Channel: Channel_889
+       Score: 2.280
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: News & Politics
+
+  #5. Channel: Channel_935
+       Score: 2.280
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: News & Politics
+
+  #6. Channel: Channel_625
+       Score: 2.280
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: News & Politics
+
+  #7. Channel: Channel_476
+       Score: 2.280
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: News & Politics
+
+  #8. Channel: Channel_656
+       Score: 2.280
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: News & Politics
+
+  #9. Channel: Channel_65
+       Score: 2.280
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: News & Politics
+
+  #10. Channel: Channel_315
+       Score: 2.280
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: News & Politics
+
+======================================================================
+✓ Generated 20 interpretable rules
+======================================================================
+
+======================================================================
+ANALYZING CHANNEL CATEGORIES (RQ4)
+======================================================================
+
+Objective: Identify which YouTube genres/categories have highest bot activity
+======================================================================
+
+[Genre-Level Bot Analysis]
+
+  1. Education
+     Risk Level: 🔴 VERY HIGH (Score: 1.014)
+     Volume: 714,207 comments from 1,000 channels
+     Duplicate Rate: 100.0%
+
+  2. Entertainment
+     Risk Level: 🔴 VERY HIGH (Score: 1.009)
+     Volume: 715,279 comments from 1,000 channels
+     Duplicate Rate: 100.0%
+
+  5. Music
+     Risk Level: 🔴 VERY HIGH (Score: 1.009)
+     Volume: 712,710 comments from 1,000 channels
+     Duplicate Rate: 100.0%
+
+  3. Gaming
+     Risk Level: 🔴 VERY HIGH (Score: 1.007)
+     Volume: 713,979 comments from 1,000 channels
+     Duplicate Rate: 100.0%
+
+  6. News & Politics
+     Risk Level: 🔴 VERY HIGH (Score: 1.002)
+     Volume: 714,259 comments from 1,000 channels
+     Duplicate Rate: 100.0%
+
+  7. Sports
+     Risk Level: 🟠 HIGH (Score: 0.994)
+     Volume: 715,292 comments from 1,000 channels
+     Duplicate Rate: 100.0%
+
+  4. Howto & Style
+     Risk Level: 🟠 HIGH (Score: 0.983)
+     Volume: 714,274 comments from 1,000 channels
+     Duplicate Rate: 100.0%
+
+======================================================================
+✓ Analyzed 7 genres/categories
+======================================================================
+
+======================================================================
+BASELINE COMPARISON: Isolation Forest
+======================================================================
+
+[Configuration]
+  Features: ['account_age_bin', 'subscriber_bin', 'video_count_bin', 'time_of_day', 'profile_complete_bin']
+  Contamination rate: 10.0%
+  Encoded dimensions: 26
+
+[Training Isolation Forest...]
+
+[Comparison Results]
+  Agreement rate: 85.7%
+  PROS flagged: 8,937 (8.9%)
+  Isolation Forest flagged: 9,719 (9.7%)
+  Precision (IF vs PROS): 22.6%
+  Recall (IF vs PROS): 24.5%
+======================================================================
+
+======================================================================
+RESEARCH QUESTIONS SUMMARY
+======================================================================
+
+[RQ1: Unsupervised Anomaly Detection]
+  Question: How can unsupervised anomaly detection identify automated
+           commenting behaviour without relying on labelled data?
+
+  Answer:
+    ✓ Successfully identified clean distributions for 6 features
+    ✓ Success rate: 100.0%
+    ✓ Method: Algorithm 1 (find unattacked bins) + Algorithm 2 (anomaly scoring)
+    ✓ Features used: account_age_bin, subscriber_bin, profile_complete_bin, time_of_day, comments_per_video_bin, genre_group
+
+[RQ2: Structural and Behavioral Features]
+  Question: Which features most effectively differentiate bots from humans?
+
+  Answer:
+    Feature Importance (by unattacked bin discovery):
+      • account_age_bin: High (5 clean bins, 100.0% effectiveness)
+      • subscriber_bin: High (8 clean bins, 100.0% effectiveness)
+      • profile_complete_bin: High (11 clean bins, 100.0% effectiveness)
+      • time_of_day: High (9 clean bins, 100.0% effectiveness)
+      • comments_per_video_bin: High (11 clean bins, 100.0% effectiveness)
+
+[RQ3: Interpretability]
+  Question: How can PROS remain interpretable to human analysts?
+
+  Answer:
+    ✓ Generated 20 human-readable rules
+    ✓ Average anomaly score (top 10): 3.178
+    ✓ Rules based on: pros_anomaly_score, channelTitle, videoGenre, is_duplicate, account_age_bin, comments_per_video_bin
+    ✓ Format: IF [Feature Combination] THEN [Bot Likelihood = X]
+
+[RQ4: Category Analysis]
+  Question: What YouTube channel categories have the most bot traffic?
+
+  Answer:
+    ✓ Analyzed 7 categories
+    ✓ Highest risk: Education (score: 1.014)
+    ✓ Lowest risk: Howto & Style (score: 0.983)
+
+======================================================================
+[PROS] Top-5% | P=0.080 R=0.056 F1=0.066
+[PROS] Top-10% | P=0.067 R=0.078 F1=0.072
+[PROS] Top-15% | P=0.074 R=0.130 F1=0.094
+
+======================================================================
+BASELINE COMPARISON: Isolation Forest
+======================================================================
+
+[Configuration]
+  Features: ['account_age_bin', 'subscriber_bin', 'video_count_bin', 'time_of_day', 'profile_complete_bin']
+  Contamination rate: 10.0%
+  Encoded dimensions: 26
+
+[Training Isolation Forest...]
+
+[Comparison Results]
+  Agreement rate: 85.8%
+  PROS flagged: 439,112 (8.8%)
+  Isolation Forest flagged: 490,823 (9.8%)
+  Precision (IF vs PROS): 22.6%
+  Recall (IF vs PROS): 25.2%
+======================================================================
+[IsolationForest] P=0.087 R=0.095 F1=0.091
+
+========================================
+Bot fraction = 20%
+========================================
+Generated: 5,000,000 comments (1,005,000 bots = 20.1%)
+======================================================================
+PROS BOT DETECTION ANALYSIS
+Research Questions from Mid-Term Report
+======================================================================
+
+======================================================================
+FEATURE ENGINEERING (RQ2: Structural & Behavioral Features)
+======================================================================
+
+[1] TEMPORAL FEATURES
+    ✓ Created: comment_hour, comment_dayofweek, time_of_day
+
+[2] ACCOUNT AGE FEATURES (Key Bot Indicator)
+    Created: account_age_days, account_age_bin
+    Account Age Distribution:
+       1-3m: 6.0%
+       1-7d: 0.6%
+       1w-1m: 2.3%
+       3m-1y: 27.5%
+       <1d: 0.2%
+       >1y: 63.4%
+
+[3] ENGAGEMENT FEATURES
+     Created: commentLikeCount, has_likes, likes_bin
+     77.0% of comments have likes
+
+[4] CHANNEL MATURITY FEATURES (Novel Contribution)
+    ✓ Created: subscriber_bin, video_count_bin
+
+[5] BEHAVIORAL FEATURES (Coordination Detection)
+     Created: is_duplicate
+     100.0% of comments are duplicates (possible coordination)
+
+[6] PROFILE COMPLETENESS FEATURES
+     Created: profile_complete_score, profile_complete_bin
+     Profile Completeness:
+       High: 47.8%
+       Low: 10.7%
+       Medium: 40.7%
+       None: 0.9%
+
+[7] VELOCITY FEATURES (Commenter Mob Detection)
+     Created: comments_per_video, comments_per_video_bin
+     0 channels with >10 comments/video (high velocity)
+
+[8] GENRE FEATURES (RQ4 Analysis)
+     Created: genre_group
+     Top Genres:
+       Education: 715,574 comments
+       Howto & Style: 715,187 comments
+       Entertainment: 714,603 comments
+       Gaming: 714,396 comments
+       News & Politics: 713,897 comments
+
+======================================================================
+✓ Feature engineering complete: 36 total features
+======================================================================
+
+Using synthetic-optimized conditional independence rules...
+Optimized rules:
+  account_age_bin ⊥ ['time_of_day', 'subscriber_bin']
+  subscriber_bin ⊥ ['genre_group', 'comments_per_video_bin']
+  profile_complete_bin ⊥ ['account_age_bin', 'likes_bin']
+  time_of_day ⊥ ['subscriber_bin', 'video_count_bin']
+  comments_per_video_bin ⊥ ['genre_group', 'subscriber_bin']
+  genre_group ⊥ ['account_age_bin', 'subscriber_bin']
+
+======================================================================
+ALGORITHM 1: ESTIMATING CLEAN DISTRIBUTIONS (RQ1)
+======================================================================
+
+Objective: Identify 'unattacked bins' to model normal behavior
+Method: Find feature values with similar conditional distributions
+======================================================================
+
+    Processing account_age_bin...
+    → Collected 4 candidate distributions
+    ✓ Found 4 UNATTACKED bins (clean traffic cluster)
+    Processing subscriber_bin...
+    → Collected 8 candidate distributions
+    ✓ Found 8 UNATTACKED bins (clean traffic cluster)
+    Processing profile_complete_bin...
+    → Collected 11 candidate distributions
+    ✓ Found 11 UNATTACKED bins (clean traffic cluster)
+    Processing time_of_day...
+    → Collected 8 candidate distributions
+    ✓ Found 8 UNATTACKED bins (clean traffic cluster)
+    Processing comments_per_video_bin...
+    → Collected 10 candidate distributions
+    ✓ Found 10 UNATTACKED bins (clean traffic cluster)
+    Processing genre_group...
+    → Collected 9 candidate distributions
+    ✓ Found 9 UNATTACKED bins (clean traffic cluster)
+
+======================================================================
+✓ RQ1 SUCCESS: Estimated clean distributions for 6/6 features
+======================================================================
+
+[Clean Distribution Summary]
+  • account_age_bin: 6 categories, 4 unattacked bins
+  • subscriber_bin: 6 categories, 8 unattacked bins
+  • profile_complete_bin: 4 categories, 11 unattacked bins
+  • time_of_day: 4 categories, 8 unattacked bins
+  • comments_per_video_bin: 5 categories, 10 unattacked bins
+  • genre_group: 7 categories, 9 unattacked bins
+
+======================================================================
+ALGORITHM 2: CALCULATING ANOMALY SCORES (RQ1 + RQ3)
+======================================================================
+
+Method: Compare observed joint probability vs. clean joint probability
+Formula: Score = P_obs(Tuple) / (α × P_clean(Tuple)) - 1
+======================================================================
+
+[Scoring Features] Using 5-tuple: ['account_age_bin', 'subscriber_bin', 'genre_group', 'comments_per_video_bin', 'profile_complete_bin']
+
+
+[Calculating Observed Frequencies]
+
+[Computing Bot Likelihood Scores]
+
+======================================================================
+✓ SCORING COMPLETE:
+======================================================================
+  Score Range: [0.0000, 2.0816]
+  Mean Score: 1.0027
+  Median Score: 0.9989
+  90th Percentile: 1.0646
+  95th Percentile: 1.1088
+  99th Percentile: 1.2275
+======================================================================
+
+======================================================================
+GENERATING INTERPRETABLE RULES (RQ3)
+======================================================================
+
+Objective: Translate anomaly scores into actionable, human-readable rules
+======================================================================
+
+[Top Suspicious Channels]
+
+  #1. Channel: Channel_52
+       Score: 2.082
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: News & Politics
+
+  #2. Channel: Channel_493
+       Score: 2.082
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: News & Politics
+
+  #3. Channel: Channel_865
+       Score: 2.082
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: News & Politics
+
+  #4. Channel: Channel_119
+       Score: 2.082
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: News & Politics
+
+  #5. Channel: Channel_214
+       Score: 2.082
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: News & Politics
+
+  #6. Channel: Channel_317
+       Score: 2.082
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: News & Politics
+
+  #7. Channel: Channel_642
+       Score: 1.846
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: Gaming
+
+  #8. Channel: Channel_469
+       Score: 1.846
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: Gaming
+
+  #9. Channel: Channel_240
+       Score: 1.846
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: Gaming
+
+  #10. Channel: Channel_824
+       Score: 1.846
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: Gaming
+
+======================================================================
+✓ Generated 20 interpretable rules
+======================================================================
+
+======================================================================
+ANALYZING CHANNEL CATEGORIES (RQ4)
+======================================================================
+
+Objective: Identify which YouTube genres/categories have highest bot activity
+======================================================================
+
+[Genre-Level Bot Analysis]
+
+  5. Music
+     Risk Level: 🔴 VERY HIGH (Score: 1.011)
+     Volume: 712,646 comments from 1,000 channels
+     Duplicate Rate: 100.0%
+
+  1. Education
+     Risk Level: 🔴 VERY HIGH (Score: 1.005)
+     Volume: 715,574 comments from 1,000 channels
+     Duplicate Rate: 100.0%
+
+  3. Gaming
+     Risk Level: 🔴 VERY HIGH (Score: 1.004)
+     Volume: 714,396 comments from 1,000 channels
+     Duplicate Rate: 100.0%
+
+  2. Entertainment
+     Risk Level: 🔴 VERY HIGH (Score: 1.003)
+     Volume: 714,603 comments from 1,000 channels
+     Duplicate Rate: 100.0%
+
+  7. Sports
+     Risk Level: 🟠 HIGH (Score: 1.000)
+     Volume: 713,697 comments from 1,000 channels
+     Duplicate Rate: 100.0%
+
+  4. Howto & Style
+     Risk Level: 🟠 HIGH (Score: 0.999)
+     Volume: 715,187 comments from 1,000 channels
+     Duplicate Rate: 100.0%
+
+  6. News & Politics
+     Risk Level: 🟠 HIGH (Score: 0.998)
+     Volume: 713,897 comments from 1,000 channels
+     Duplicate Rate: 100.0%
+
+======================================================================
+✓ Analyzed 7 genres/categories
+======================================================================
+
+======================================================================
+BASELINE COMPARISON: Isolation Forest
+======================================================================
+
+[Configuration]
+  Features: ['account_age_bin', 'subscriber_bin', 'video_count_bin', 'time_of_day', 'profile_complete_bin']
+  Contamination rate: 10.0%
+  Encoded dimensions: 26
+
+[Training Isolation Forest...]
+
+[Comparison Results]
+  Agreement rate: 87.9%
+  PROS flagged: 9,616 (9.6%)
+  Isolation Forest flagged: 9,826 (9.8%)
+  Precision (IF vs PROS): 37.6%
+  Recall (IF vs PROS): 38.4%
+======================================================================
+
+======================================================================
+RESEARCH QUESTIONS SUMMARY
+======================================================================
+
+[RQ1: Unsupervised Anomaly Detection]
+  Question: How can unsupervised anomaly detection identify automated
+           commenting behaviour without relying on labelled data?
+
+  Answer:
+    ✓ Successfully identified clean distributions for 6 features
+    ✓ Success rate: 100.0%
+    ✓ Method: Algorithm 1 (find unattacked bins) + Algorithm 2 (anomaly scoring)
+    ✓ Features used: account_age_bin, subscriber_bin, profile_complete_bin, time_of_day, comments_per_video_bin, genre_group
+
+[RQ2: Structural and Behavioral Features]
+  Question: Which features most effectively differentiate bots from humans?
+
+  Answer:
+    Feature Importance (by unattacked bin discovery):
+      • account_age_bin: High (4 clean bins, 100.0% effectiveness)
+      • subscriber_bin: High (8 clean bins, 100.0% effectiveness)
+      • profile_complete_bin: High (11 clean bins, 100.0% effectiveness)
+      • time_of_day: High (8 clean bins, 100.0% effectiveness)
+      • comments_per_video_bin: High (10 clean bins, 100.0% effectiveness)
+
+[RQ3: Interpretability]
+  Question: How can PROS remain interpretable to human analysts?
+
+  Answer:
+    ✓ Generated 20 human-readable rules
+    ✓ Average anomaly score (top 10): 1.987
+    ✓ Rules based on: pros_anomaly_score, channelTitle, videoGenre, is_duplicate, account_age_bin, comments_per_video_bin
+    ✓ Format: IF [Feature Combination] THEN [Bot Likelihood = X]
+
+[RQ4: Category Analysis]
+  Question: What YouTube channel categories have the most bot traffic?
+
+  Answer:
+    ✓ Analyzed 7 categories
+    ✓ Highest risk: Music (score: 1.011)
+    ✓ Lowest risk: News & Politics (score: 0.998)
+
+======================================================================
+[PROS] Top-5% | P=0.200 R=0.050 F1=0.080
+[PROS] Top-10% | P=0.189 R=0.095 F1=0.126
+[PROS] Top-15% | P=0.190 R=0.144 F1=0.164
+
+======================================================================
+BASELINE COMPARISON: Isolation Forest
+======================================================================
+
+[Configuration]
+  Features: ['account_age_bin', 'subscriber_bin', 'video_count_bin', 'time_of_day', 'profile_complete_bin']
+  Contamination rate: 10.0%
+  Encoded dimensions: 26
+
+[Training Isolation Forest...]
+
+[Comparison Results]
+  Agreement rate: 87.1%
+  PROS flagged: 499,644 (10.0%)
+  Isolation Forest flagged: 497,594 (10.0%)
+  Precision (IF vs PROS): 35.2%
+  Recall (IF vs PROS): 35.1%
+======================================================================
+[IsolationForest] P=0.184 R=0.091 F1=0.122
+
+========================================
+Bot fraction = 30%
+========================================
+Generated: 5,000,000 comments (1,485,000 bots = 29.7%)
+======================================================================
+PROS BOT DETECTION ANALYSIS
+Research Questions from Mid-Term Report
+======================================================================
+
+======================================================================
+FEATURE ENGINEERING (RQ2: Structural & Behavioral Features)
+======================================================================
+
+[1] TEMPORAL FEATURES
+    ✓ Created: comment_hour, comment_dayofweek, time_of_day
+
+[2] ACCOUNT AGE FEATURES (Key Bot Indicator)
+    Created: account_age_days, account_age_bin
+    Account Age Distribution:
+       1-3m: 6.0%
+       1-7d: 0.6%
+       1w-1m: 2.3%
+       3m-1y: 27.5%
+       <1d: 0.2%
+       >1y: 63.4%
+
+[3] ENGAGEMENT FEATURES
+     Created: commentLikeCount, has_likes, likes_bin
+     72.5% of comments have likes
+
+[4] CHANNEL MATURITY FEATURES (Novel Contribution)
+    ✓ Created: subscriber_bin, video_count_bin
+
+[5] BEHAVIORAL FEATURES (Coordination Detection)
+     Created: is_duplicate
+     100.0% of comments are duplicates (possible coordination)
+
+[6] PROFILE COMPLETENESS FEATURES
+     Created: profile_complete_score, profile_complete_bin
+     Profile Completeness:
+       High: 48.0%
+       Low: 10.5%
+       Medium: 40.6%
+       None: 0.9%
+
+[7] VELOCITY FEATURES (Commenter Mob Detection)
+     Created: comments_per_video, comments_per_video_bin
+     0 channels with >10 comments/video (high velocity)
+
+[8] GENRE FEATURES (RQ4 Analysis)
+     Created: genre_group
+     Top Genres:
+       Entertainment: 716,607 comments
+       Sports: 714,864 comments
+       Music: 714,568 comments
+       News & Politics: 714,363 comments
+       Howto & Style: 714,188 comments
+
+======================================================================
+✓ Feature engineering complete: 36 total features
+======================================================================
+
+Using synthetic-optimized conditional independence rules...
+Optimized rules:
+  account_age_bin ⊥ ['time_of_day', 'subscriber_bin']
+  subscriber_bin ⊥ ['genre_group', 'comments_per_video_bin']
+  profile_complete_bin ⊥ ['account_age_bin', 'likes_bin']
+  time_of_day ⊥ ['subscriber_bin', 'video_count_bin']
+  comments_per_video_bin ⊥ ['genre_group', 'subscriber_bin']
+  genre_group ⊥ ['account_age_bin', 'subscriber_bin']
+
+======================================================================
+ALGORITHM 1: ESTIMATING CLEAN DISTRIBUTIONS (RQ1)
+======================================================================
+
+Objective: Identify 'unattacked bins' to model normal behavior
+Method: Find feature values with similar conditional distributions
+======================================================================
+
+    Processing account_age_bin...
+    → Collected 4 candidate distributions
+    ✓ Found 4 UNATTACKED bins (clean traffic cluster)
+    Processing subscriber_bin...
+    → Collected 8 candidate distributions
+    ✓ Found 8 UNATTACKED bins (clean traffic cluster)
+    Processing profile_complete_bin...
+    → Collected 11 candidate distributions
+    ✓ Found 11 UNATTACKED bins (clean traffic cluster)
+    Processing time_of_day...
+    → Collected 8 candidate distributions
+    ✓ Found 8 UNATTACKED bins (clean traffic cluster)
+    Processing comments_per_video_bin...
+    → Collected 10 candidate distributions
+    ✓ Found 10 UNATTACKED bins (clean traffic cluster)
+    Processing genre_group...
+    → Collected 9 candidate distributions
+    ✓ Found 9 UNATTACKED bins (clean traffic cluster)
+
+======================================================================
+✓ RQ1 SUCCESS: Estimated clean distributions for 6/6 features
+======================================================================
+
+[Clean Distribution Summary]
+  • account_age_bin: 6 categories, 4 unattacked bins
+  • subscriber_bin: 6 categories, 8 unattacked bins
+  • profile_complete_bin: 4 categories, 11 unattacked bins
+  • time_of_day: 4 categories, 8 unattacked bins
+  • comments_per_video_bin: 5 categories, 10 unattacked bins
+  • genre_group: 7 categories, 9 unattacked bins
+
+======================================================================
+ALGORITHM 2: CALCULATING ANOMALY SCORES (RQ1 + RQ3)
+======================================================================
+
+Method: Compare observed joint probability vs. clean joint probability
+Formula: Score = P_obs(Tuple) / (α × P_clean(Tuple)) - 1
+======================================================================
+
+[Scoring Features] Using 5-tuple: ['account_age_bin', 'subscriber_bin', 'genre_group', 'comments_per_video_bin', 'profile_complete_bin']
+
+
+[Calculating Observed Frequencies]
+
+[Computing Bot Likelihood Scores]
+
+======================================================================
+✓ SCORING COMPLETE:
+======================================================================
+  Score Range: [0.0000, 2.9580]
+  Mean Score: 1.0009
+  Median Score: 1.0005
+  90th Percentile: 1.0269
+  95th Percentile: 1.0712
+  99th Percentile: 1.1290
+======================================================================
+
+======================================================================
+GENERATING INTERPRETABLE RULES (RQ3)
+======================================================================
+
+Objective: Translate anomaly scores into actionable, human-readable rules
+======================================================================
+
+[Top Suspicious Channels]
+
+  #1. Channel: Channel_470
+       Score: 2.958
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: Education
+
+  #2. Channel: Channel_446
+       Score: 2.915
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: Music
+
+  #3. Channel: Channel_506
+       Score: 2.861
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: News & Politics
+
+  #4. Channel: Channel_436
+       Score: 2.861
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: News & Politics
+
+  #5. Channel: Channel_549
+       Score: 2.861
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: News & Politics
+
+  #6. Channel: Channel_974
+       Score: 2.861
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: News & Politics
+
+  #7. Channel: Channel_428
+       Score: 2.861
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: News & Politics
+
+  #8. Channel: Channel_582
+       Score: 2.861
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: News & Politics
+
+  #9. Channel: Channel_285
+       Score: 2.861
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: News & Politics
+
+  #10. Channel: Channel_684
+       Score: 2.861
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: News & Politics
+
+======================================================================
+✓ Generated 20 interpretable rules
+======================================================================
+
+======================================================================
+ANALYZING CHANNEL CATEGORIES (RQ4)
+======================================================================
+
+Objective: Identify which YouTube genres/categories have highest bot activity
+======================================================================
+
+[Genre-Level Bot Analysis]
+
+  1. Education
+     Risk Level: 🔴 VERY HIGH (Score: 1.019)
+     Volume: 712,764 comments from 1,000 channels
+     Duplicate Rate: 100.0%
+
+  7. Sports
+     Risk Level: 🔴 VERY HIGH (Score: 1.005)
+     Volume: 714,864 comments from 1,000 channels
+     Duplicate Rate: 100.0%
+
+  5. Music
+     Risk Level: 🔴 VERY HIGH (Score: 1.002)
+     Volume: 714,568 comments from 1,000 channels
+     Duplicate Rate: 100.0%
+
+  4. Howto & Style
+     Risk Level: 🟠 HIGH (Score: 1.000)
+     Volume: 714,188 comments from 1,000 channels
+     Duplicate Rate: 100.0%
+
+  2. Entertainment
+     Risk Level: 🟠 HIGH (Score: 0.995)
+     Volume: 716,607 comments from 1,000 channels
+     Duplicate Rate: 100.0%
+
+  6. News & Politics
+     Risk Level: 🟠 HIGH (Score: 0.995)
+     Volume: 714,363 comments from 1,000 channels
+     Duplicate Rate: 100.0%
+
+  3. Gaming
+     Risk Level: 🟠 HIGH (Score: 0.991)
+     Volume: 712,646 comments from 1,000 channels
+     Duplicate Rate: 100.0%
+
+======================================================================
+✓ Analyzed 7 genres/categories
+======================================================================
+
+======================================================================
+BASELINE COMPARISON: Isolation Forest
+======================================================================
+
+[Configuration]
+  Features: ['account_age_bin', 'subscriber_bin', 'video_count_bin', 'time_of_day', 'profile_complete_bin']
+  Contamination rate: 10.0%
+  Encoded dimensions: 26
+
+[Training Isolation Forest...]
+
+[Comparison Results]
+  Agreement rate: 86.1%
+  PROS flagged: 8,593 (8.6%)
+  Isolation Forest flagged: 9,959 (10.0%)
+  Precision (IF vs PROS): 23.5%
+  Recall (IF vs PROS): 27.3%
+======================================================================
+
+======================================================================
+RESEARCH QUESTIONS SUMMARY
+======================================================================
+
+[RQ1: Unsupervised Anomaly Detection]
+  Question: How can unsupervised anomaly detection identify automated
+           commenting behaviour without relying on labelled data?
+
+  Answer:
+    ✓ Successfully identified clean distributions for 6 features
+    ✓ Success rate: 100.0%
+    ✓ Method: Algorithm 1 (find unattacked bins) + Algorithm 2 (anomaly scoring)
+    ✓ Features used: account_age_bin, subscriber_bin, profile_complete_bin, time_of_day, comments_per_video_bin, genre_group
+
+[RQ2: Structural and Behavioral Features]
+  Question: Which features most effectively differentiate bots from humans?
+
+  Answer:
+    Feature Importance (by unattacked bin discovery):
+      • account_age_bin: High (4 clean bins, 100.0% effectiveness)
+      • subscriber_bin: High (8 clean bins, 100.0% effectiveness)
+      • profile_complete_bin: High (11 clean bins, 100.0% effectiveness)
+      • time_of_day: High (8 clean bins, 100.0% effectiveness)
+      • comments_per_video_bin: High (10 clean bins, 100.0% effectiveness)
+
+[RQ3: Interpretability]
+  Question: How can PROS remain interpretable to human analysts?
+
+  Answer:
+    ✓ Generated 20 human-readable rules
+    ✓ Average anomaly score (top 10): 2.876
+    ✓ Rules based on: pros_anomaly_score, channelTitle, videoGenre, is_duplicate, account_age_bin, comments_per_video_bin
+    ✓ Format: IF [Feature Combination] THEN [Bot Likelihood = X]
+
+[RQ4: Category Analysis]
+  Question: What YouTube channel categories have the most bot traffic?
+
+  Answer:
+    ✓ Analyzed 7 categories
+    ✓ Highest risk: Education (score: 1.019)
+    ✓ Lowest risk: Gaming (score: 0.991)
+
+======================================================================
+[PROS] Top-5% | P=0.314 R=0.054 F1=0.092
+[PROS] Top-10% | P=0.315 R=0.115 F1=0.168
+[PROS] Top-15% | P=0.341 R=0.199 F1=0.251
+
+======================================================================
+BASELINE COMPARISON: Isolation Forest
+======================================================================
+
+[Configuration]
+  Features: ['account_age_bin', 'subscriber_bin', 'video_count_bin', 'time_of_day', 'profile_complete_bin']
+  Contamination rate: 10.0%
+  Encoded dimensions: 26
+
+[Training Isolation Forest...]
+
+[Comparison Results]
+  Agreement rate: 86.2%
+  PROS flagged: 423,316 (8.5%)
+  Isolation Forest flagged: 483,591 (9.7%)
+  Precision (IF vs PROS): 22.3%
+  Recall (IF vs PROS): 25.5%
+======================================================================
+[IsolationForest] P=0.296 R=0.096 F1=0.145
+
+✓ Summary saved: c:\Users\rusha\RD Documents\Rushabh's career\Computer Science\University\Year\Year 3\Semester 1\Web and Cloud Based Security\COMP-3226-Web-and-Cloud-Based-Security-\Code\Youtube Results\synthetic_improved_summary_20260105_030348.csv
+
+======================================================================
+CREATING ZOOMED VISUALIZATIONS
+======================================================================
+
+Generating ZOOMED visualizations...
+ZOOMED visualization saved: c:\Users\rusha\RD Documents\Rushabh's career\Computer Science\University\Year\Year 3\Semester 1\Web and Cloud Based Security\COMP-3226-Web-and-Cloud-Based-Security-\Code\Youtube Results\synthetic_zoomed_visualization_20260105_030348.png
+
+SCORE DISTRIBUTION ANALYSIS (30% bots):
+  Human scores: μ=1.001, σ=0.042, range=[0.707, 2.958]
+  Bot scores: μ=1.000, σ=0.046, range=[0.000, 1.244]
+  Separation: -0.001 (Higher = better discrimination)
+  Overlap (<0.1): 96.6% (Lower = better)
+
+DETECTION THRESHOLDS (30% bots):
+  Top-5%: Score ≥ 1.071 (80,000/1,485,000 bots = 5.4%, 175,169/3,515,000 humans = 5.0%)
+  Top-10%: Score ≥ 1.027 (170,385/1,485,000 bots = 11.5%, 370,000/3,515,000 humans = 10.5%)
+  Top-15%: Score ≥ 1.018 (295,000/1,485,000 bots = 19.9%, 568,856/3,515,000 humans = 16.2%)
+
+PERFORMANCE METRICS:
+  Top-5%: P=0.314, R=0.054, F1=0.092, TP=80,000, FP=175,169, FN=1,405,000, TN=3,339,831
+  Top-10%: P=0.315, R=0.115, F1=0.168, TP=170,385, FP=370,000, FN=1,314,615, TN=3,145,000
+  Top-15%: P=0.341, R=0.199, F1=0.251, TP=295,000, FP=568,856, FN=1,190,000, TN=2,946,144
+
+======================================================================
+IMPROVED SYNTHETIC VALIDATION COMPLETE!
+======================================================================

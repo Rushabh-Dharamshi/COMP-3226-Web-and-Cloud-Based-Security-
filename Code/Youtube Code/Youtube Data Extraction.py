@@ -35,10 +35,10 @@ def clean_and_load_json(json_path):
     try:
         with open(json_path, "r", encoding="utf-8") as f:
             data = json.load(f)
-            print(f"✅ Loaded {len(data)} records from {json_path}")
+            print(f"Loaded {len(data)} records from {json_path}")
             return data
     except json.JSONDecodeError:
-        print(f"⚠ {json_path} is corrupted. Cleaning in place...")
+        print(f" {json_path} is corrupted. Cleaning in place...")
         with open(json_path, "r", encoding="utf-8", errors="ignore") as f:
             text = f.read()
         # Extract objects containing "videoID"
@@ -52,7 +52,7 @@ def clean_and_load_json(json_path):
         # Save cleaned JSON
         with open(json_path, "w", encoding="utf-8") as f:
             json.dump(recovered, f, indent=2, ensure_ascii=False)
-        print(f"✅ Cleaned {len(recovered)} records in {json_path}")
+        print(f" Cleaned {len(recovered)} records in {json_path}")
         return recovered
 
 def get_video_ids_from_excel(excel_path):
@@ -190,7 +190,7 @@ if __name__ == "__main__":
     unique_video_ids = list(dict.fromkeys(video_ids_raw))
     print(f"{len(unique_video_ids)} unique video IDs to process.\n")
 
-    all_new_comments = []
+    total_new_comments = 0
 
     for vid in unique_video_ids:
         if vid in processed_video_ids:
@@ -207,20 +207,21 @@ if __name__ == "__main__":
         new_comments = [c for c in comments if (c.get("videoID"), c.get("commentDate"), c.get("channelID")) not in existing_keys]
 
         original_comments.extend(new_comments)
-        all_new_comments.extend(new_comments)
         processed_video_ids.add(vid)
-        print(f"✅ {len(new_comments)} new comments merged into main JSON.\n")
+        total_new_comments += len(new_comments)
+        print(f"{len(new_comments)} new comments merged into main JSON.\n")
 
-        # Save main JSON incrementally to avoid data loss
+        # Save main JSON incrementally
         with open(JSON_PATH, "w", encoding="utf-8") as f:
             json.dump(original_comments, f, indent=2, ensure_ascii=False)
 
-    # Save CSV
-    if all_new_comments:
-        df = pd.DataFrame(all_new_comments)
+        # Save CSV mirroring JSON after each video
+        df = pd.DataFrame(original_comments)
+        df.drop_duplicates(subset=["videoID", "commentDate", "channelID"], inplace=True)
         df.to_csv(CSV_PATH, index=False, encoding="utf-8-sig")
-        print(f"CSV saved: {CSV_PATH}")
+        print(f"CSV saved: {CSV_PATH} (mirrors JSON)")
 
-    print(f"\n🔹 Data extraction complete. Only 2 files remain: main JSON and CSV.")
-    print(f"Total comments in JSON: {len(original_comments)}")
-    print(f"Total new comments in CSV: {len(all_new_comments)}")
+    print(f"\n🔹 Data extraction complete.")
+    print(f"Total comments in JSON/CSV: {len(original_comments)}")
+    print(f"Total new comments added this run: {total_new_comments}")
+

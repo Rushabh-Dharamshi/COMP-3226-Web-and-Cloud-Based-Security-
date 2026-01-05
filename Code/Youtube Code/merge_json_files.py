@@ -11,13 +11,20 @@ ORIGINAL_JSON = os.path.join(DATA_DIR, "Youtube_extracted_data.json")
 APPEND_JSON   = os.path.join(DATA_DIR, "Youtube_extracted_data_append.json")
 
 # ---------------- HELPER FUNCTIONS ----------------
+def count_lines(path):
+    """Returns number of lines in a file."""
+    if not os.path.exists(path):
+        return 0
+    with open(path, "r", encoding="utf-8", errors="ignore") as f:
+        return sum(1 for _ in f)
+
 def recover_json_objects(path):
     """
     Recovers all valid JSON objects from a possibly corrupted JSON array file.
     Returns list of valid objects.
     """
     if not os.path.exists(path):
-        print(f"❌ File does not exist: {path}")
+        print(f" File does not exist: {path}")
         return []
 
     recovered = []
@@ -44,18 +51,25 @@ def recover_json_objects(path):
         except json.JSONDecodeError:
             continue  # skip invalid objects
 
-    print(f"✅ Successfully recovered {len(recovered)} valid objects.")
+    print(f" Successfully recovered {len(recovered)} valid objects.")
     return recovered
 
 # ---------------- MAIN ----------------
 if __name__ == "__main__":
     print("🔹 Starting merge process...\n")
 
-    # 1️⃣ Clean original JSON
+    #  Line counts BEFORE merge
+    original_lines = count_lines(ORIGINAL_JSON)
+    append_lines = count_lines(APPEND_JSON)
+
+    print(f" Original JSON lines   : {original_lines}")
+    print(f" Append JSON lines     : {append_lines}\n")
+
+    #  Clean original JSON
     original_comments = recover_json_objects(ORIGINAL_JSON)
     print(f"Original JSON has {len(original_comments)} valid comments after cleanup.\n")
 
-    # 2️⃣ Load append JSON
+    #  Load append JSON
     append_comments = recover_json_objects(APPEND_JSON)
     print(f"Append JSON has {len(append_comments)} comments.\n")
 
@@ -63,13 +77,15 @@ if __name__ == "__main__":
         print("ℹ Append JSON is empty. Nothing to merge. Exiting.")
         exit()
 
-    # 3️⃣ Merge avoiding duplicates
+    #  Merge avoiding duplicates
     existing_keys = set(
         (c.get("videoID"), c.get("commentDate"), c.get("channelID"))
         for c in original_comments
     )
+
     new_comments = []
     skipped_count = 0
+
     for c in append_comments:
         key = (c.get("videoID"), c.get("commentDate"), c.get("channelID"))
         if key not in existing_keys:
@@ -77,23 +93,17 @@ if __name__ == "__main__":
         else:
             skipped_count += 1
 
-    print(f"✅ {len(new_comments)} new comments to merge.")
+    print(f" {len(new_comments)} new comments to merge.")
     print(f"ℹ Skipped {skipped_count} duplicate comments.\n")
 
     if not new_comments:
         print("ℹ No new comments to merge (all duplicates). Exiting.")
         exit()
 
-    # 4️⃣ Merge and save back to original JSON
+    # Merge and save
     merged_comments = original_comments + new_comments
     with open(ORIGINAL_JSON, "w", encoding="utf-8") as f:
         json.dump(merged_comments, f, indent=2, ensure_ascii=False)
 
-    print(f"✅ Merged {len(new_comments)} comments into {ORIGINAL_JSON}.")
+    print(f"Merged {len(new_comments)} comments into {ORIGINAL_JSON}.")
     print(f"Original JSON now contains {len(merged_comments)} comments.\n")
-
-    # 5️⃣ Clear append JSON
-    with open(APPEND_JSON, "w", encoding="utf-8") as f:
-        json.dump([], f)
-    print(f"✅ Cleared append JSON: {APPEND_JSON}\n")
-    print("🔹 Merge process complete.")
