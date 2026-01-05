@@ -3,3 +3,4 @@ venv/
 env/
 .env/
 Code/venv_youtube/
+__pycache__/
