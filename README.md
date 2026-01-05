@@ -125,24 +125,13 @@ Output:
 
 ## Data Extraction
 
-- All the data has been collected for us in Code/Youtube Data/ folder. You do not need to run extraction scripts if the files exist.
+- All the data has been collected for us in Code/Youtube Data/ folder. 
 
-Folder structure:
+- You do not need to run extraction scripts as the files already exist. 
 
-Code/
-Youtube Data/
-├── video_ids.xlsx
-├── Youtube_extracted_data.csv
-├── Youtube_extracted_data.json
-└── Youtube_extracted_data_append.json
+- Youtube_extracted_data.json → Final consolidated dataset (Json version)
 
-Notes:
-
-video_ids.xlsx → Input video IDs
-
-Youtube_extracted_data_append.json → Temporary team data
-
-Youtube_extracted_data.json → Final consolidated dataset
+- Youtube_extracted_data.csv → Final consolidated dataset (csv version)
 
 ## Prequisite: Delete Youtube Results folder
 
