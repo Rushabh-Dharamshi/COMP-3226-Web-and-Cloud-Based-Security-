@@ -36,19 +36,45 @@ except json.JSONDecodeError as e:
 df = pd.DataFrame(all_comments)
 
 # Ensure required columns exist
-if 'videoID' not in df.columns or 'videoGenre' not in df.columns:
+required_cols = {'videoID', 'videoGenre'}
+if not required_cols.issubset(df.columns):
     raise ValueError("JSON must contain 'videoID' and 'videoGenre' fields.")
 
-# Keep only unique videoID per category
-unique_videos = df[['videoID', 'videoGenre']].drop_duplicates()
+# ---------------- OVERALL COUNTS ----------------
+total_comments = len(df)
+total_unique_videos = df['videoID'].nunique()
 
-# ---------------- GROUP BY CATEGORY ----------------
-videos_grouped = unique_videos.groupby('videoGenre')['videoID'].apply(list)
+print("=" * 50)
+print("OVERALL DATASET STATISTICS")
+print("=" * 50)
+print(f"Total comments extracted: {total_comments}")
+print(f"Total unique videos extracted: {total_unique_videos}\n")
 
-# ---------------- PRINT SUMMARY ----------------
-total_videos = unique_videos['videoID'].nunique()
-print(f"Total unique videos extracted: {total_videos}\n")
+# ---------------- VIDEOS PER CATEGORY ----------------
+videos_per_category = (
+    df[['videoID', 'videoGenre']]
+    .drop_duplicates()
+    .groupby('videoGenre')
+    .size()
+    .sort_values(ascending=False)
+)
 
-print("Videos per category:\n")
-for category, vids in videos_grouped.items():
-    print(f"Category: {category} -> {len(vids)} videos")
+print("=" * 50)
+print("VIDEOS PER CATEGORY")
+print("=" * 50)
+for category, count in videos_per_category.items():
+    print(f"{category}: {count} videos")
+
+# ---------------- COMMENTS PER CATEGORY ----------------
+comments_per_category = (
+    df
+    .groupby('videoGenre')
+    .size()
+    .sort_values(ascending=False)
+)
+
+print("\n" + "=" * 50)
+print("COMMENTS PER CATEGORY")
+print("=" * 50)
+for category, count in comments_per_category.items():
+    print(f"{category}: {count} comments")

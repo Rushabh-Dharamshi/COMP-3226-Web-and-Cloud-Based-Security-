@@ -38,5 +38,5 @@ else:
 
     # Save to CSV
     df.to_csv(CSV_PATH, index=False, encoding="utf-8-sig")
-    print(f"✅ CSV backup created from JSON at: {CSV_PATH}")
+    print(f" CSV backup created from JSON at: {CSV_PATH}")
     print(f"Total comments exported: {len(df)}")
