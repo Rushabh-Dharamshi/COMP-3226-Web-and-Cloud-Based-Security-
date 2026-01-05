@@ -216,6 +216,56 @@ Objective: Translate anomaly scores into actionable, human-readable rules
        Rule: Account Age: <1d AND Velocity: 1 comments/video
        Genre: Science & Technology
 
+  #11. Channel: None
+       Score: 31.754
+       Rule: Account Age: <1d AND Velocity: 1 comments/video
+       Genre: Science & Technology
+
+  #12. Channel: kjs8719
+       Score: 31.754
+       Rule: Account Age: <1d AND Velocity: 2-3 comments/video
+       Genre: Science & Technology
+
+  #13. Channel: None
+       Score: 31.754
+       Rule: Account Age: <1d AND Velocity: 1 comments/video
+       Genre: Science & Technology
+
+  #14. Channel: None
+       Score: 31.754
+       Rule: Account Age: <1d AND Velocity: 1 comments/video
+       Genre: Science & Technology
+
+  #15. Channel: None
+       Score: 31.754
+       Rule: Account Age: <1d AND Velocity: 1 comments/video
+       Genre: Science & Technology
+
+  #16. Channel: None
+       Score: 31.754
+       Rule: Account Age: <1d AND Velocity: 1 comments/video
+       Genre: Science & Technology
+
+  #17. Channel: None
+       Score: 31.754
+       Rule: Account Age: <1d AND Velocity: 1 comments/video
+       Genre: Science & Technology
+
+  #18. Channel: None
+       Score: 31.754
+       Rule: Account Age: <1d AND Velocity: 1 comments/video
+       Genre: Science & Technology
+
+  #19. Channel: None
+       Score: 31.754
+       Rule: Account Age: <1d AND Velocity: 1 comments/video
+       Genre: Science & Technology
+
+  #20. Channel: Caleb
+       Score: 31.754
+       Rule: Account Age: <1d AND Velocity: 1 comments/video
+       Genre: Science & Technology
+
 ======================================================================
 ✓ Generated 20 interpretable rules
 ======================================================================
@@ -346,9 +396,9 @@ RESEARCH QUESTIONS SUMMARY
 
 ======================================================================
 
-✓ Saved genre analysis: c:\Users\rusha\RD Documents\Rushabh's career\Computer Science\University\Year\Year 3\Semester 1\Web and Cloud Based Security\COMP-3226-Web-and-Cloud-Based-Security-\Code\Youtube Results\pros_genre_analysis_20260105_024210.csv
-✓ Saved clean distributions: c:\Users\rusha\RD Documents\Rushabh's career\Computer Science\University\Year\Year 3\Semester 1\Web and Cloud Based Security\COMP-3226-Web-and-Cloud-Based-Security-\Code\Youtube Results\pros_clean_distributions_20260105_024210.json
-✓ Saved RQ metrics: c:\Users\rusha\RD Documents\Rushabh's career\Computer Science\University\Year\Year 3\Semester 1\Web and Cloud Based Security\COMP-3226-Web-and-Cloud-Based-Security-\Code\Youtube Results\pros_rq_metrics_20260105_024210.json
+✓ Saved genre analysis: c:\Users\rusha\RD Documents\Rushabh's career\Computer Science\University\Year\Year 3\Semester 1\Web and Cloud Based Security\COMP-3226-Web-and-Cloud-Based-Security-\Code\Youtube Results\pros_genre_analysis_20260105_074612.csv
+✓ Saved clean distributions: c:\Users\rusha\RD Documents\Rushabh's career\Computer Science\University\Year\Year 3\Semester 1\Web and Cloud Based Security\COMP-3226-Web-and-Cloud-Based-Security-\Code\Youtube Results\pros_clean_distributions_20260105_074612.json
+✓ Saved RQ metrics: c:\Users\rusha\RD Documents\Rushabh's career\Computer Science\University\Year\Year 3\Semester 1\Web and Cloud Based Security\COMP-3226-Web-and-Cloud-Based-Security-\Code\Youtube Results\pros_rq_metrics_20260105_074612.json
 
 ======================================================================
 CREATING VISUALIZATION 1: RESEARCH QUESTIONS OVERVIEW
@@ -380,4 +430,8 @@ Created 2 clear, non-overlapping visualizations:
   • Top Channels: Interpretable detection rules
   → Saved as: c:\Users\rusha\RD Documents\Rushabh's career\Computer Science\University\Year\Year 3\Semester 1\Web and Cloud Based Security\COMP-3226-Web-and-Cloud-Based-Security-\Code\Youtube Results\pros_visualization_2_feature_analysis.png
 
+======================================================================
+
+======================================================================
+ANALYSIS COMPLETE!
 ======================================================================

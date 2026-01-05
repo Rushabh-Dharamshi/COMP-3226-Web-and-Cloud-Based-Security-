@@ -12,8 +12,8 @@
 3. [Youtube Comments Analysis - Setup & Execution Guide](#youtube-comments-analysis---setup--execution-guide)
    * [Data Extraction](#data-extraction)
    * [Prequisites - Delete Youtube Results folder](#prequisite-delete-youtube-results-folder)
-   * [Step 1: Run PROS Analysis on Youtube Comments](#step-1-run-pros-analysis-on-youtube-comments)
-   * [Step 2: Run Synthetic Data Evaluation](#step-2-run-synthetic-data-evaluation)
+   * [Step 1: Run Synthetic Data Evaluation](#step-1-run-synthetic-data-evaluation)
+   * [Step 2: Run PROS Analysis on Youtube Comments](#step-2-run-pros-analysis-on-youtube-comments)
 
 # Introduction
 This README.md provides the step-by-step instructions needed to run the web log and YouTube comment analysis project. The purpose of the weblog dataset is to prove that the PROS algoritihm works based on ground truth labels. 
@@ -135,10 +135,41 @@ Output:
 
 ## Prequisite: Delete Youtube Results folder
 
-- You must delete the Youtube Results folder if you want to run the python files to produce the results
+1.  You must delete the Youtube Results folder if you want to run the python files to produce the results
+
+2. \COMP-3226-Web-and-Cloud-Based-Security-> on this directory - enter the command:
+
+```Bash
+pip install -r requirements.txt
+```
+
+## Step 1: Run Synthetic Data Evaluation
 
 
-## Step 1: Run PROS Analysis on YouTube Comments
+Before analyzing real YouTube data, validate the PROS algorithm on synthetic data with known ground truth:
+
+
+```Bash
+python synthetic_pros_evaluation.py
+```
+
+What this python file does:
+
+- synthetic_pros_evaluation.py is a validation script that simulates YouTube comment data to test the PROS anomaly detection method. It generates realistic synthetic bot and human behavior, applies PROS to detect automated activity, and compares its performance against Isolation Forest across different bot prevalence levels.
+
+
+
+Outputs in Youtube Results/ folder:
+
+- synthetic_improved_output_[TIMESTAMP].txt:	Console log of all synthetic tests and performance metrics
+- synthetic_improved_summary_[TIMESTAMP].csv:	Performance summary across bot fractions and thresholds
+- synthetic_zoomed_visualization_[TIMESTAMP].png:	Four-panel visualization: F1-Score, Precision, Recall, and Score Distribution with stats
+
+
+
+## Step 2: Run PROS Analysis on YouTube Comments
+
+Once synthetic validation is successful, apply PROS to real YouTube data.
 
 Navigate to the Code/Youtube Code/ folder:
 
@@ -147,6 +178,10 @@ Run the PROS algorithm:
 ```Bash
 python Youtube_model.py
 ```
+
+What this python file does:
+
+- The youtube_model.py implements the PROS (Pivot and Seek Rank-One Submatrix) algorithm for unsupervised bot detection on actual YouTube comments. It processes categorical features like account age, posting velocity, and profile completeness to estimate clean behavior distributions and identify suspicious activity without labeled data.
 
 
 Outputs in the Youtube Results/ folder:
@@ -161,23 +196,4 @@ Outputs in the Youtube Results/ folder:
 - pros_rq_metrics_[TIMESTAMP].json	Performance metrics and evaluation results
 
 
-## Step 2: Run Synthetic Data Evaluation
 
-```Bash
-python synthetic_pros_evaluation.py
-```
-- Generates realistic synthetic YouTube data with known bot/human labels
-
-- Tests PROS performance at different bot fractions (5%, 10%, 20%, 30%)
-
-- Compares PROS against Isolation Forest
-
-- Produces detailed visualizations
-
-
-
-Outputs in Youtube Results/ folder:
-
-- synthetic_improved_output_[TIMESTAMP].txt:	Console log of all synthetic tests and performance metrics
-- synthetic_improved_summary_[TIMESTAMP].csv:	Performance summary across bot fractions and thresholds
-- synthetic_zoomed_visualization_[TIMESTAMP].png:	Four-panel visualization: F1-Score, Precision, Recall, and Score Distribution with stats

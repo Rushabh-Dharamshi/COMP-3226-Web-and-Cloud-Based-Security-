@@ -201,6 +201,56 @@ Objective: Translate anomaly scores into actionable, human-readable rules
        Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
        Genre: Entertainment
 
+  #11. Channel: Channel_654
+       Score: 2.128
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: Entertainment
+
+  #12. Channel: Channel_839
+       Score: 2.128
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: Entertainment
+
+  #13. Channel: Channel_808
+       Score: 2.128
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: Entertainment
+
+  #14. Channel: Channel_368
+       Score: 2.128
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: Entertainment
+
+  #15. Channel: Channel_531
+       Score: 2.128
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: Entertainment
+
+  #16. Channel: Channel_619
+       Score: 2.128
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: Entertainment
+
+  #17. Channel: Channel_470
+       Score: 1.833
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: Music
+
+  #18. Channel: Channel_165
+       Score: 1.833
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: Music
+
+  #19. Channel: Channel_800
+       Score: 1.833
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: Music
+
+  #20. Channel: Channel_38
+       Score: 1.833
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: Music
+
 ======================================================================
 ✓ Generated 20 interpretable rules
 ======================================================================
@@ -533,6 +583,56 @@ Objective: Translate anomaly scores into actionable, human-readable rules
        Score: 2.280
        Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
        Genre: News & Politics
+
+  #11. Channel: Channel_824
+       Score: 2.280
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: News & Politics
+
+  #12. Channel: Channel_357
+       Score: 2.280
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: News & Politics
+
+  #13. Channel: Channel_844
+       Score: 2.280
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: News & Politics
+
+  #14. Channel: Channel_835
+       Score: 2.280
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: News & Politics
+
+  #15. Channel: Channel_63
+       Score: 2.280
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: News & Politics
+
+  #16. Channel: Channel_179
+       Score: 2.280
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: News & Politics
+
+  #17. Channel: Channel_348
+       Score: 2.150
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: Sports
+
+  #18. Channel: Channel_259
+       Score: 2.150
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: Sports
+
+  #19. Channel: Channel_245
+       Score: 2.150
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: Sports
+
+  #20. Channel: Channel_700
+       Score: 1.776
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: Howto & Style
 
 ======================================================================
 ✓ Generated 20 interpretable rules
@@ -867,6 +967,56 @@ Objective: Translate anomaly scores into actionable, human-readable rules
        Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
        Genre: Gaming
 
+  #11. Channel: Channel_341
+       Score: 1.846
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: Gaming
+
+  #12. Channel: Channel_566
+       Score: 1.846
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: Gaming
+
+  #13. Channel: Channel_575
+       Score: 1.846
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: Gaming
+
+  #14. Channel: Channel_702
+       Score: 1.843
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: Education
+
+  #15. Channel: Channel_979
+       Score: 1.843
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: Education
+
+  #16. Channel: Channel_0
+       Score: 1.843
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: Education
+
+  #17. Channel: Channel_558
+       Score: 1.843
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: Education
+
+  #18. Channel: Channel_212
+       Score: 1.843
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: Education
+
+  #19. Channel: Channel_438
+       Score: 1.843
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: Education
+
+  #20. Channel: Channel_582
+       Score: 1.843
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: Education
+
 ======================================================================
 ✓ Generated 20 interpretable rules
 ======================================================================
@@ -1200,6 +1350,56 @@ Objective: Translate anomaly scores into actionable, human-readable rules
        Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
        Genre: News & Politics
 
+  #11. Channel: Channel_530
+       Score: 2.361
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: News & Politics
+
+  #12. Channel: Channel_77
+       Score: 2.361
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: News & Politics
+
+  #13. Channel: Channel_863
+       Score: 2.361
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: News & Politics
+
+  #14. Channel: Channel_785
+       Score: 2.361
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: News & Politics
+
+  #15. Channel: Channel_207
+       Score: 2.361
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: News & Politics
+
+  #16. Channel: Channel_523
+       Score: 2.361
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: News & Politics
+
+  #17. Channel: Channel_670
+       Score: 2.361
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: News & Politics
+
+  #18. Channel: Channel_167
+       Score: 2.361
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: News & Politics
+
+  #19. Channel: Channel_55
+       Score: 2.361
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: News & Politics
+
+  #20. Channel: Channel_649
+       Score: 2.361
+       Rule: Account Age: >1y AND Velocity: 1 comments/video AND Duplicates: 100.0%
+       Genre: News & Politics
+
 ======================================================================
 ✓ Generated 20 interpretable rules
 ======================================================================
@@ -1338,14 +1538,14 @@ BASELINE COMPARISON: Isolation Forest
 ======================================================================
 [IsolationForest] P=0.296 R=0.096 F1=0.145
 
-✓ Summary saved: c:\Users\rusha\RD Documents\Rushabh's career\Computer Science\University\Year\Year 3\Semester 1\Web and Cloud Based Security\COMP-3226-Web-and-Cloud-Based-Security-\Code\Youtube Results\synthetic_improved_summary_20260105_030348.csv
+✓ Summary saved: c:\Users\rusha\RD Documents\Rushabh's career\Computer Science\University\Year\Year 3\Semester 1\Web and Cloud Based Security\COMP-3226-Web-and-Cloud-Based-Security-\Code\Youtube Results\synthetic_improved_summary_20260105_075657.csv
 
 ======================================================================
 CREATING ZOOMED VISUALIZATIONS
 ======================================================================
 
 Generating ZOOMED visualizations...
-ZOOMED visualization saved: c:\Users\rusha\RD Documents\Rushabh's career\Computer Science\University\Year\Year 3\Semester 1\Web and Cloud Based Security\COMP-3226-Web-and-Cloud-Based-Security-\Code\Youtube Results\synthetic_zoomed_visualization_20260105_030348.png
+ZOOMED visualization saved: c:\Users\rusha\RD Documents\Rushabh's career\Computer Science\University\Year\Year 3\Semester 1\Web and Cloud Based Security\COMP-3226-Web-and-Cloud-Based-Security-\Code\Youtube Results\synthetic_zoomed_visualization_20260105_075657.png
 
 SCORE DISTRIBUTION ANALYSIS (30% bots):
   Human scores: μ=1.001, σ=0.042, range=[0.707, 2.958]
