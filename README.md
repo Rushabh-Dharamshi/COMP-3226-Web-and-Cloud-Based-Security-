@@ -160,7 +160,7 @@ What this python file does:
 
 
 
-Outputs in Youtube Results/ folder:
+Outputs in Code/Youtube Results/ folder:
 
 - synthetic_improved_output_[TIMESTAMP].txt:	Console log of all synthetic tests and performance metrics
 - synthetic_improved_summary_[TIMESTAMP].csv:	Performance summary across bot fractions and thresholds
@@ -185,7 +185,7 @@ What this python file does:
 - The youtube_model.py implements the PROS (Pivot and Seek Rank-One Submatrix) algorithm for unsupervised bot detection on actual YouTube comments. It processes categorical features like account age, posting velocity, and profile completeness to estimate clean behavior distributions and identify suspicious activity without labeled data.
 
 
-Outputs in the Youtube Results/ folder:
+Outputs in the Code/Youtube Results/ folder:
 
 
 - pros_terminal_output_[TIMESTAMP].txt:	Full console log of PROS execution
