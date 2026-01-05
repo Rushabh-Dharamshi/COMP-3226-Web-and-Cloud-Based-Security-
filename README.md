@@ -10,13 +10,10 @@
    * [Step 4: Run PROS Detection & Evaluation (Algorithm 2)](#step-4-run-pros-detection--evaluation-algorithm-2)
    * [Troubleshooting](#troubleshooting)
 3. [Youtube Comments Analysis - Setup & Execution Guide](#youtube-comments-analysis---setup--execution-guide)
-<<<<<<< HEAD
-=======
    * [Data Extraction](#data-extraction)
    * [Prequisites - Delete Youtube Results folder](#prequisite-delete-youtube-results-folder)
    * [Step 1: Run PROS Analysis on Youtube Comments](#step-1-run-pros-analysis-on-youtube-comments)
    * [Step 2: Run Synthetic Data Evaluation](#step-2-run-synthetic-data-evaluation)
->>>>>>> b1f542c (Update README.md with setup instructions)
 
 # Introduction
 This README.md provides the step-by-step instructions needed to run the web log and YouTube comment analysis project. The purpose of the weblog dataset is to prove that the PROS algoritihm works based on ground truth labels. 
@@ -132,6 +129,7 @@ Output:
 
 Folder structure:
 
+Code/
 Youtube Data/
 ├── video_ids.xlsx
 ├── Youtube_extracted_data.csv
@@ -146,7 +144,7 @@ Youtube_extracted_data_append.json → Temporary team data
 
 Youtube_extracted_data.json → Final consolidated dataset
 
-## prequisite: Delete Youtube Results folder
+## Prequisite: Delete Youtube Results folder
 
 - You must delete the Youtube Results folder if you want to run the python files to produce the results
 
