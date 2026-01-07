@@ -6,7 +6,7 @@ import os
 # ==============================================================================
 # CONFIGURATION
 # ==============================================================================
-INPUT_FILE = "processed_web_log_features_w_Honeypot.csv"
+INPUT_FILE = "processed_web_log_features.csv"
 OUTPUT_DIR = "clean_distributions"
 
 if not os.path.exists(OUTPUT_DIR):
