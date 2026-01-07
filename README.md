@@ -16,7 +16,7 @@
    * [Prequisites - Delete Youtube Results folder](#prequisite-delete-youtube-results-folder)
    * [Step 1: Run Synthetic Data Evaluation](#step-1-run-synthetic-data-evaluation)
    * [Step 2: Run PROS Analysis on Youtube Comments](#step-2-run-pros-analysis-on-youtube-comments)
-4. [Authors]
+4. [Authors](#authors)
 
 # Introduction
 This README.md provides the step-by-step instructions needed to run the web log and YouTube comment analysis project. The purpose of the weblog dataset is to prove that the PROS algoritihm works based on ground truth labels. 
