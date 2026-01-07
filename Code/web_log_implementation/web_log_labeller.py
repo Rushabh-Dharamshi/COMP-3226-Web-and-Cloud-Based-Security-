@@ -156,20 +156,21 @@ print("Geo extraction complete.")
 print("Generating Labels (Ground Truth)...")
 
 def get_label(row):
-    # Rule 1: Status 418 ("I'm a teapot") [cite: 498]
+    # Rule 1
     if row['status'] == 418:
         return 1
     
     # Check request string existence
     req = str(row['request'])
     
-    # Rule 2: WordPress Probes ('wp-') [cite: 500, 510]
+    # Rule 2
     if 'wp-' in req:
         return 1
         
-    # Rule 3: Log Harvesting ('access.log') [cite: 504, 510]
+    # Rule 3
     if 'access.log' in req:
         return 1
+    # Rule 4
     if '/honeypot' in req:
         return 1
     # Otherwise Benign (0)
