@@ -22,7 +22,7 @@ df = pd.read_csv(DATA_FILE)
 df.fillna("Unknown", inplace=True)
 
 # ==============================================================================
-# 1. LOAD CLEAN DISTRIBUTIONS (The "Brain")
+# 1. LOAD CLEAN DISTRIBUTIONS 
 # ==============================================================================
 dist_cache = {}
 
@@ -70,8 +70,8 @@ def get_clean_vector(df, target, condition_col):
 print("  > Looking up P(path | country)...")
 df['p_clean_path'] = get_clean_vector(df, 'path_feature', 'country')
 
-print("  > Looking up P(status | country)...")
-df['p_clean_status'] = get_clean_vector(df, 'status', 'country')
+print("  > Looking up P(status | path_feature)...")
+df['p_clean_status'] = get_clean_vector(df, 'status', 'path_feature')
 
 print("  > Looking up P(browser | family)...")
 df['p_clean_browser'] = get_clean_vector(df, 'browser', 'family')
@@ -126,9 +126,6 @@ out_cols = [
     'bot_odds'                                            # The Score
 ]
 
-# Ensure we have all columns (some might be missing if raw csv not fully loaded)
-# Assuming 'timestamp' and 'request' are in the input CSV. 
-# If not, use the columns we have.
 available_cols = [c for c in out_cols if c in df.columns]
 df[available_cols].to_csv(OUTPUT_FILE, index=False)
 
@@ -144,38 +141,64 @@ print("-" * 60)
 print("\nTraining Isolation Forest for comparison...")
 iso_features = ['family', 'path_feature', 'status']
 
-# One-Hot Encoding
+# We use a random sample of 100k rows for the baseline. 
+# This prevents the MemoryError and makes it run in seconds instead of hours.
+SAMPLE_SIZE = 100000
+
+if len(df) > SAMPLE_SIZE:
+    print(f"  > Dataset too large for baseline. Sampling {SAMPLE_SIZE} rows...")
+    df_iso = df.sample(n=SAMPLE_SIZE, random_state=42).copy()
+else:
+    df_iso = df.copy()
+# We force 'sparse=True' so we don't create a 1TB array of zeros.
 try:
-    encoder = OneHotEncoder(sparse_output=False, handle_unknown='ignore')
+    # Newer sklearn versions
+    encoder = OneHotEncoder(sparse_output=True, handle_unknown='ignore')
 except TypeError:
-    encoder = OneHotEncoder(sparse=False, handle_unknown='ignore')
+    # Older sklearn versions
+    encoder = OneHotEncoder(sparse=True, handle_unknown='ignore')
 
-X_iso = encoder.fit_transform(df[iso_features].astype(str))
+print("  > Encoding features...")
+X_iso = encoder.fit_transform(df_iso[iso_features].astype(str))
 
-# Train Model
+print("  > Fitting Isolation Forest...")
 clf = IsolationForest(contamination='auto', random_state=42, n_jobs=-1)
+# Train Model
 clf.fit(X_iso)
 
-# Get Scores (Negate so higher = more anomalous)
-iso_scores = -clf.decision_function(X_iso)
+# Get Scores
+# IF contamination='auto' and bots > humans, '1' (normal) might actually be the bots.
+# We trust the raw decision_function more than the prediction.
+iso_scores = clf.decision_function(X_iso) 
+
+# REVERSE logic: If AUC < 0.5, the model is inverted.
+# Check correlation with PROS to decide direction, or just absolute distance from 0.5.
+fpr_iso, tpr_iso, _ = roc_curve(df_iso['label'], iso_scores)
+roc_auc_iso = auc(fpr_iso, tpr_iso)
+
+if roc_auc_iso < 0.5:
+    print(" ! Inverted Baseline detected (Majority Class = Anomalous). Flipping scores...")
+    iso_scores = -iso_scores # Flip the sign
+    fpr_iso, tpr_iso, _ = roc_curve(df_iso['label'], iso_scores)
+    roc_auc_iso = auc(fpr_iso, tpr_iso)
 
 # ==============================================================================
 # 4. PLOT ROC CURVES
 # ==============================================================================
 print("Plotting ROC Curves...")
 
-# Calculate ROC for PROS
+# 1. PROS Curve (Uses ALL 5.5 Million rows - We already calculated this!)
 fpr_pros, tpr_pros, _ = roc_curve(df['label'], df['bot_odds'])
 roc_auc_pros = auc(fpr_pros, tpr_pros)
 
-# Calculate ROC for Isolation Forest
-fpr_iso, tpr_iso, _ = roc_curve(df['label'], iso_scores)
+# 2. Isolation Forest Curve (Uses the 100k Sample)
+fpr_iso, tpr_iso, _ = roc_curve(df_iso['label'], iso_scores)
 roc_auc_iso = auc(fpr_iso, tpr_iso)
 
 # Plot
 plt.figure(figsize=(10, 8))
-plt.plot(fpr_pros, tpr_pros, color='darkorange', lw=2, label=f'PROS (AUC = {roc_auc_pros:.3f})')
-plt.plot(fpr_iso, tpr_iso, color='navy', lw=2, linestyle='--', label=f'Isolation Forest (AUC = {roc_auc_iso:.3f})')
+plt.plot(fpr_pros, tpr_pros, color='darkorange', lw=2, label=f'PROS (Full Data) AUC = {roc_auc_pros:.3f}')
+plt.plot(fpr_iso, tpr_iso, color='navy', lw=2, linestyle='--', label=f'Isolation Forest (Baseline) AUC = {roc_auc_iso:.3f}')
 plt.plot([0, 1], [0, 1], color='gray', lw=1, linestyle=':')
 plt.xlim([0.0, 1.0])
 plt.ylim([0.0, 1.05])

@@ -17,7 +17,6 @@ for folder in [access_dest, error_dest]:
 print(f"Scanning: {base_dir}")
 
 # 2. WALK THROUGH ALL FOLDERS
-# os.walk will find files even if they are inside subfolders like '2015', '2016'
 for root, dirs, files in os.walk(base_dir):
     
     # Skip our destination folders so we don't re-process files we just moved
@@ -37,12 +36,7 @@ for root, dirs, files in os.walk(base_dir):
             except zipfile.BadZipFile:
                 print(f"Warning: Corrupt zip file skipped: {filename}")
             
-            # Note: The loop continues; the extracted .gz files will be picked up 
-            # either in this loop (if os.walk updates) or you might need to run it twice.
-            # To be safe, we usually extract, then process .gz files in a second pass 
-            # or just handle the .gz files that appear.
-            
-        # CASE B: It's a GZ file -> Move it
+        # CASE B: It's a GZ file, Move it
         elif filename.lower().endswith(".gz"):
             # Determine destination
             if "access" in filename.lower():

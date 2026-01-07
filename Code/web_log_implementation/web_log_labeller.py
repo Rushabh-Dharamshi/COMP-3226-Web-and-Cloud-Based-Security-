@@ -1,6 +1,7 @@
 import pandas as pd
 import user_agents
 import geoip2.database
+import os
 from datetime import datetime
 
 # 1. LOAD DATA
@@ -93,28 +94,61 @@ def get_root_path(full_path):
 df['path_feature'] = df['path'].apply(get_root_path)
 
 # ==========================================
-# PART D: IP Geolocation
+# PART D: IP Geolocation (High-Speed Cached)
 # ==========================================
 print("Extracting IP features...")
 HAS_GEO_DB = True
 GEO_DB_PATH = 'GeoLite2-City.mmdb'
 
-if HAS_GEO_DB:
+if HAS_GEO_DB and os.path.exists(GEO_DB_PATH):
+    import geoip2.database
+    
+    print("  > Loading GeoIP Database...")
     reader = geoip2.database.Reader(GEO_DB_PATH)
-    def get_geo(ip):
+    
+    # 1. Get Unique IPs (The massive speedup)
+    # Your sample shows repeated IPs like 46.109.67.155. 
+    # We only look up this IP ONCE, instead of 10 times.
+    unique_ips = df['ip'].unique()
+    print(f"  > Processing {len(unique_ips)} unique IPs (skipped {len(df) - len(unique_ips)} duplicate lookups)...")
+    
+    # 2. Build Lookup Dictionary
+    ip_map = {}
+    
+    for i, ip in enumerate(unique_ips):
         try:
             r = reader.city(ip)
-            return {'city': r.city.name, 'state': r.subdivisions.most_specific.name, 'country': r.country.name}
+            # Storing as a simple dict is faster/lighter than full objects
+            ip_map[ip] = {
+                'city': r.city.name if r.city.name else "Unknown",
+                'state': r.subdivisions.most_specific.name if r.subdivisions.most_specific.name else "Unknown",
+                'country': r.country.name if r.country.name else "Unknown"
+            }
         except:
-            return {'city': None, 'state': None, 'country': None}
-    geo_data = df['ip'].apply(get_geo).apply(pd.Series)
-    df = pd.concat([df, geo_data], axis=1)
+            ip_map[ip] = {'city': "Unknown", 'state': "Unknown", 'country': "Unknown"}
+            
+        # Progress check every 10%
+        if i % (max(1, len(unique_ips)//10)) == 0:
+            print(f"    Lookup progress: {i}/{len(unique_ips)}")
+
     reader.close()
+    
+    # 3. Vectorized Merge (Instant mapping)
+    print("  > Mapping IPs back to main DataFrame...")
+    
+    # Create a lightweight DataFrame for the merge
+    geo_df = pd.DataFrame.from_dict(ip_map, orient='index')
+    
+    # Merge using index (extremely fast in Pandas)
+    df = df.merge(geo_df, left_on='ip', right_index=True, how='left')
+    
 else:
     print("Skipping Geo (No DB). Setting to Unknown.")
     df['city'] = "Unknown"
     df['state'] = "Unknown"
     df['country'] = "Unknown"
+
+print("Geo extraction complete.")
 
 # ==========================================
 # PART E: LABEL GENERATION (The New Part)
@@ -136,7 +170,8 @@ def get_label(row):
     # Rule 3: Log Harvesting ('access.log') [cite: 504, 510]
     if 'access.log' in req:
         return 1
-        
+    if '/honeypot' in req:
+        return 1
     # Otherwise Benign (0)
     return 0
 
