@@ -204,7 +204,7 @@ Outputs in the Code/Youtube Results/ folder:
 
 # Authors 
 
-- Rushabh Dharamshi
-- Bharatraj KR
-- Osama Heweitat
-- Radoslaw Kucisz
+- Rushabh Dharamshi: rd5g23@soton.ac.uk
+- Bharatraj KR: bkr1n23@soton.ac.uk
+- Osama Heweitat: oh5g23@soton.ac.uk
+- Radoslaw Kucisz: rk6g23@soton.ac.uk
