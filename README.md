@@ -30,7 +30,7 @@ This repository contains the implementation of the PROS (Probabilistic Reasoning
 Ensure you have Python 3.8+ installed. You will need the following Python libraries:
 
 ```bash
-pip install pandas numpy scipy scikit-learn matplotlib user-agents geoip2
+pip install pandas numpy scipy scikit-learn matplotlib requests beautifulsoup4 user-agents geoip2
 ```
 **Important: You also need the GeoLite2-City.mmdb database for IP geolocation (Cuurently provided in the directory. If that does not work follow, the steps below to install GeoLite2).**
 
