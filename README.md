@@ -12,8 +12,8 @@
    * [Step 4: Run PROS Detection & Evaluation (Algorithm 2)](#step-4-run-pros-detection--evaluation-algorithm-2)
    * [Troubleshooting](#troubleshooting)
 3. [Youtube Comments Analysis - Setup & Execution Guide](#youtube-comments-analysis---setup--execution-guide)
+   * [Prerequisite 2](#prerequisite-2)
    * [Data Extraction](#data-extraction)
-   * [Prequisites - Delete Youtube Results folder](#prequisite-delete-youtube-results-folder)
    * [Step 1: Run Synthetic Data Evaluation](#step-1-run-synthetic-data-evaluation)
    * [Step 2: Run PROS Analysis on Youtube Comments](#step-2-run-pros-analysis-on-youtube-comments)
 4. [Authors](#authors)
@@ -136,7 +136,7 @@ Output:
 
 - Youtube_extracted_data.csv → Final consolidated dataset (csv version)
 
-## Prequisite: Delete Youtube Results folder
+## Prerequisite 2
 
 1.  You must delete the Youtube Results folder if you want to run the python files to produce the results
 
@@ -145,6 +145,8 @@ Output:
 ```Bash
 pip install -r requirements.txt
 ```
+
+3. Make sure that when you have git cloned the project (if you haven't already) - to wait for a few seconds and not run the code immediately - to ensure that all the files get populated correctly. This can take a few seconds up to a minute for the files in Code/Youtube Data to be present. In Code/Youtube Data - you should have 4 files (2 json, 1 csv and 1 xlsx).
 
 ## Step 1: Run Synthetic Data Evaluation
 
