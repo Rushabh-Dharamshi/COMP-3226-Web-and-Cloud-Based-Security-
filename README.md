@@ -146,9 +146,7 @@ Output:
 pip install -r requirements.txt
 ```
 
-3. Make sure that when you have git cloned the project (if you haven't already) - to wait for a few seconds and not run the code immediately - to ensure that all the files get populated correctly. 
-
-This can take a few seconds up to a minute for the files in Code/Youtube Data to be present. In Code/Youtube Data - you should have 4 files (2 json, 1 csv and 1 xlsx).
+3. Make sure that when you have git cloned the project (if you haven't already) - to wait for a few seconds and not run the code immediately - to ensure that all the files get populated correctly. This can take a few seconds up to a minute for the files in Code/Youtube Data to be present. In Code/Youtube Data - you should have 4 files (2 json, 1 csv and 1 xlsx).
 
 ## Step 1: Run Synthetic Data Evaluation
 
