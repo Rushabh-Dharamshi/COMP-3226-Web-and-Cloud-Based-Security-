@@ -173,6 +173,8 @@ python Json_To_CSV.py
 
 - This would have created the Youtube_extracted_data.csv file.
 
+- **IMPORTANT!!** - The 2 files in Code/Youtube Data that you absolutely must have are Youtube_extracted_data.csv and Youtube_extracted_data.json.
+
 - In your git cloned Youtube Results folder - there's a chance you may not have all the 9 files. If that's the case - then just download the remaining files from GitHub (not a problem as they are not large in size) -> till you get all 9 files and place them in the Code / Youtube Results directory.
 
 - Once this is done - you now have all the files and can move on to the next step.
