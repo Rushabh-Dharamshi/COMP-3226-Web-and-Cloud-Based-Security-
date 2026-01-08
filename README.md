@@ -139,15 +139,35 @@ Output:
 
 ## Prerequisite 2
 
-1.  You must delete the Youtube Results folder if you want to run the python files to produce the results
+1. Make sure to clone the project:
 
-2. \COMP-3226-Web-and-Cloud-Based-Security-> on this directory - enter the command:
+```Bash
+git clone https://github.com/Rushabh-Dharamshi/COMP-3226-Web-and-Cloud-Based-Security-.git
+```
+
+2. Make sure that when you have git cloned the project (if you haven't already) - to wait for a few seconds and not run the code immediately - to ensure that all the files get populated correctly. This can take a few seconds up to a minute for the files in Code/Youtube Data to be present. In Code/Youtube Data - you should have 4 files (2 json, 1 csv and 1 xlsx).
+
+NOTE!!: If for some reason - you get an error (such as error downloading object as the Youtube_extracted_data.csv and Youtube_extracted_data.json are quite large) - then please download Youtube_extracted_data.json from GitHub by going to Code -> Youtube Data -> Youtube_extracted_data.json and clicking on the download raw button. (Here - don't download the csv file as it will make it a .txt file) - instead just download the json file (no need to download Youtube_extracted_data_append.json or video_ids.xlsx) as all the data has been collected. Once you have the Youtube_extracted_data.json downloaded - put it on the Code/Youtube Data folder directory. Once this is done - go on terminal and navigate to Youtube Code Directory so it looks something like: \Code\Youtube Code> and type command:
+
+```Bash
+python Json_To_CSV.py
+```
+
+You should get output of something like this:
+
+Total comments exported: 2129214
+
+This would have created the Youtube_extracted_data.csv file - so now you have all the files needed to run the code!!
+
+
+3.  You must delete the Youtube Results folder if you want to run the python files to produce the results
+
+4. \COMP-3226-Web-and-Cloud-Based-Security-> on this directory - enter the command:
 
 ```Bash
 pip install -r requirements.txt
 ```
 
-3. Make sure that when you have git cloned the project (if you haven't already) - to wait for a few seconds and not run the code immediately - to ensure that all the files get populated correctly. This can take a few seconds up to a minute for the files in Code/Youtube Data to be present. In Code/Youtube Data - you should have 4 files (2 json, 1 csv and 1 xlsx).
 
 ## Step 1: Run Synthetic Data Evaluation
 
