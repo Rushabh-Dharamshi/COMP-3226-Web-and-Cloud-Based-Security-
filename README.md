@@ -148,11 +148,11 @@ https://youtu.be/bxjcnbNMwvQ
 git clone https://github.com/Rushabh-Dharamshi/COMP-3226-Web-and-Cloud-Based-Security-.git
 ```
 
-2. Make sure that when you have git cloned the project (if you haven't already) - to wait for a few seconds and not run the code immediately - to ensure that all the files get populated correctly. This can take a few seconds up to a minute for the files in Code/Youtube Data to be present.
+2. Make sure that when you have git cloned the project (if you haven't already) to wait for a few seconds and not run the code immediately.  This ensures that all the files get populated correctly. This can take a few seconds up to a minute for the files in Code/Youtube Data to be present.
 - In Code/Youtube Data - you should have 4 files (2 json, 1 csv and 1 xlsx).
 - If there are any other missing files (particularly inside Youtube Results or Youtube Data) - then please see the note message below.
-- -Also check that you have all the files in Code/Youtube Code present. There should be 7 Python (.py) files. If not then quickly download it by going on to Code/Youtube Code/ *.py file and clicking on the download button. Put the downloaded (if needed) .py files in Code/ Youtube Code directory. Usually when git cloning this project - all the files inside Youtube Code are usually there.
-- -If you have all the files present - then please move to 3. 
+- Also check that you have all the files in Code/Youtube Code present. There should be 7 Python (.py) files. If not then quickly download it by going on to Code/Youtube Code/ *.py file and clicking on the download button. Put the downloaded (if needed) .py files in Code/ Youtube Code directory. Usually when git cloning this project - all the files inside Youtube Code are usually there.
+- If you have all the files present - then please move to 3. 
 
 NOTE!!: 
 
