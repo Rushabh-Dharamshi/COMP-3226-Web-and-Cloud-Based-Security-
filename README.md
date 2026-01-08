@@ -127,6 +127,9 @@ Output:
 
 # Youtube Comments Analysis - Setup & Execution Guide
 
+Here is a video of our prototype running the PROS algorithm on the synthetic 5 million Youtube comments we generated and also on the real 2 million + Youtube comments we extracted using the Youtube Data API.
+https://youtu.be/bxjcnbNMwvQ
+
 ## Data Extraction
 
 - All the data has been collected for us in Code/Youtube Data/ folder. 
