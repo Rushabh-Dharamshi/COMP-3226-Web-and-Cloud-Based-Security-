@@ -147,7 +147,12 @@ git clone https://github.com/Rushabh-Dharamshi/COMP-3226-Web-and-Cloud-Based-Sec
 
 2. Make sure that when you have git cloned the project (if you haven't already) - to wait for a few seconds and not run the code immediately - to ensure that all the files get populated correctly. This can take a few seconds up to a minute for the files in Code/Youtube Data to be present. In Code/Youtube Data - you should have 4 files (2 json, 1 csv and 1 xlsx).
 
-NOTE!!: If for some reason - you get an error (such as error downloading object as the Youtube_extracted_data.csv and Youtube_extracted_data.json are quite large) - then please download Youtube_extracted_data.json from GitHub by going to Code -> Youtube Data -> Youtube_extracted_data.json and clicking on the download raw button. (Here - don't download the csv file as it will make it a .txt file) - instead just download the json file (no need to download Youtube_extracted_data_append.json or video_ids.xlsx) as all the data has been collected. Once you have the Youtube_extracted_data.json downloaded - put it on the Code/Youtube Data folder directory. Once this is done - go on terminal and navigate to Youtube Code Directory so it looks something like: \Code\Youtube Code> and type command:
+NOTE!!: If for some reason - you get an error (such as error downloading object as the Youtube_extracted_data.csv and Youtube_extracted_data.json are quite large) - then please download Youtube_extracted_data.json from GitHub by going to Code -> Youtube Data -> Youtube_extracted_data.json and clicking on the download raw button. 
+
+(Here - don't download the csv file as it will make it a .txt file) - instead just download the json file (no need to download Youtube_extracted_data_append.json or video_ids.xlsx) as all the data has been collected. Once you have the Youtube_extracted_data.json downloaded - put it on the Code/Youtube Data folder directory. 
+
+Once this is done - go on terminal and navigate to Youtube Code Directory so it looks something like: \Code\Youtube Code> and type command:
+
 
 ```Bash
 python Json_To_CSV.py
