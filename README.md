@@ -140,6 +140,8 @@ https://youtu.be/bxjcnbNMwvQ
 
 - Youtube_extracted_data.csv → Final consolidated dataset (csv version)
 
+- **IMPORTANT!!** - The 2 files in Code/Youtube Data that you absolutely must have are Youtube_extracted_data.csv and Youtube_extracted_data.json. It is ok if you don't have video_ids.xlsx or Youtube_extracted_data_append.json as these were only used during the data collection process (data has been provided so no need to collect data). 
+
 ## Prerequisite 2
 
 1. Make sure to clone the project:
@@ -154,7 +156,7 @@ git clone https://github.com/Rushabh-Dharamshi/COMP-3226-Web-and-Cloud-Based-Sec
 - Also check that you have all the files in Code/Youtube Code present. There should be 7 Python (.py) files. If not then quickly download it by going on to Code/Youtube Code/ *.py file and clicking on the download button. Put the downloaded (if needed) .py files in Code/ Youtube Code directory. Usually when git cloning this project - all the files inside Youtube Code are usually there.
 - If you have all the files present - then please move to 3. 
 
-NOTE!!: 
+**NOTE!!:** 
 
 - If for some reason - you get an error (such as error downloading object as the Youtube_extracted_data.csv and Youtube_extracted_data.json are quite large) - then please download Youtube_extracted_data.json from GitHub by going to Code -> Youtube Data -> Youtube_extracted_data.json and clicking on the download raw button. 
 
@@ -172,8 +174,6 @@ python Json_To_CSV.py
 - Total comments exported: 2129214
 
 - This would have created the Youtube_extracted_data.csv file.
-
-- **IMPORTANT!!** - The 2 files in Code/Youtube Data that you absolutely must have are Youtube_extracted_data.csv and Youtube_extracted_data.json.
 
 - In your git cloned Youtube Results folder - there's a chance you may not have all the 9 files. If that's the case - then just download the remaining files from GitHub (not a problem as they are not large in size) -> till you get all 9 files and place them in the Code / Youtube Results directory.
 
