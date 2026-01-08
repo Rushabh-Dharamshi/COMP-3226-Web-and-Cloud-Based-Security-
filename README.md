@@ -145,7 +145,7 @@ Output:
 git clone https://github.com/Rushabh-Dharamshi/COMP-3226-Web-and-Cloud-Based-Security-.git
 ```
 
-2. Make sure that when you have git cloned the project (if you haven't already) - to wait for a few seconds and not run the code immediately - to ensure that all the files get populated correctly. This can take a few seconds up to a minute for the files in Code/Youtube Data to be present. In Code/Youtube Data - you should have 4 files (2 json, 1 csv and 1 xlsx).
+2. Make sure that when you have git cloned the project (if you haven't already) - to wait for a few seconds and not run the code immediately - to ensure that all the files get populated correctly. This can take a few seconds up to a minute for the files in Code/Youtube Data to be present. In Code/Youtube Data - you should have 4 files (2 json, 1 csv and 1 xlsx). Also check that you have all the files in Code/Youtube Code present. There should be 7 Python (.py) files. If not then quickly download it by going on to Code -> Youtube Code -> *.py file and clicking on the download button. Put the downloaded (if needed) .py files in Code -> Youtube Code directory. Usually when git cloning this project - all the files inside Youtube Code are usually there. If there are any other missing files (particularly inside Youtube Results or Youtube Data) - then please see the note message below. If you have all the files present - then please move to 3. 
 
 NOTE!!: If for some reason - you get an error (such as error downloading object as the Youtube_extracted_data.csv and Youtube_extracted_data.json are quite large) - then please download Youtube_extracted_data.json from GitHub by going to Code -> Youtube Data -> Youtube_extracted_data.json and clicking on the download raw button. 
 
@@ -162,7 +162,12 @@ You should get output of something like this:
 
 Total comments exported: 2129214
 
-This would have created the Youtube_extracted_data.csv file - so now you have all the files needed to run the code!!
+This would have created the Youtube_extracted_data.csv file.
+
+In your git cloned Youtube Results folder - there's a chance you may not have all the 9 files. If that's the case - then just download the remaining files from GitHub (not a problem as they are not large in size) -> till you get all 9 files and place them in the Code / Youtube Results directory.
+
+Once this is done - 
+
 
 
 3.  You must delete the Youtube Results folder if you want to run the python files to produce the results
@@ -172,7 +177,6 @@ This would have created the Youtube_extracted_data.csv file - so now you have al
 ```Bash
 pip install -r requirements.txt
 ```
-
 
 ## Step 1: Run Synthetic Data Evaluation
 
