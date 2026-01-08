@@ -24,6 +24,7 @@ This README.md provides the step-by-step instructions needed to run the web log 
 # Web Log PROS Analysis - Setup & Execution Guide
 
 This repository contains the implementation of the PROS (Probabilistic Reasoning for Outlier Selection) algorithm for detecting bot traffic in web server logs.
+Youtube Video Link on the Guide: [https://www.youtube.com/watch?v=-gkw4b94Vkw&feature=youtu.be](https://www.youtube.com/watch?v=-gkw4b94Vkw)
 
 ## Prerequisites
 
